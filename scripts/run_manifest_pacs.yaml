@@ -1,0 +1,161 @@
+# =============================================================================
+# Run Manifest — PACS First-Experiment Set
+# CausalGuard Rebuttal Experiments
+# Created: 2026-11-07
+#
+# USAGE:
+#   Review and confirm all fields before launching.
+#   Launch with: python scripts/launch_manifest.py --manifest scripts/run_manifest_pacs.yaml
+#
+# NON-NEGOTIABLE CONSTRAINTS:
+#   - checkpoint_selection: source_val_only  (never use target labels)
+#   - seeds: exactly as specified; do not add or discard seeds
+#   - no silent batch size or step changes after OOM
+#   - new results labeled: reproduced_rebuttal (not original_paper)
+#   - distinct results from original paper clearly separated
+# =============================================================================
+
+manifest_version: "1.0"
+created: "2026-11-07"
+branch: "cursor/causalguard-rebuttal-96ab"
+
+global:
+  dataset: PACS
+  data_dir: /data/domainbed          # LOCAL SSD — do not use NAS for active training
+  output_base: /data/causalguard_runs
+  backup_dir: null                   # SET THIS to NAS path when available
+  checkpoint_selection: source_val_only
+  backbone: resnet50
+  pretrain: imagenet
+  input_size: 224
+  holdout_fraction: 0.2              # DomainBed standard
+  uda_holdout_fraction: 0            # No target data
+  trial_seeds: [0, 1, 2]            # 3 seeds for rebuttal (original paper uses 5; labeled)
+  n_seeds_original_paper: 5
+  result_label: reproduced_rebuttal  # NOT original_paper
+
+experiments:
+
+  # ── ERM Reference ───────────────────────────────────────────────────────────
+  - id: pacs_erm_seed0
+    algorithm: ERM
+    test_envs: [0]  # art_painting
+    seed: 0
+    hparams:
+      batch_size: 32
+      lr: 5.0e-5
+      weight_decay: 0.0
+      num_steps: 5000
+    expected_runtime_hours: 0.5
+    status: PENDING
+
+  - id: pacs_erm_seed1
+    algorithm: ERM
+    test_envs: [1]  # cartoon
+    seed: 1
+    hparams: {batch_size: 32, lr: 5.0e-5, weight_decay: 0.0, num_steps: 5000}
+    expected_runtime_hours: 0.5
+    status: PENDING
+
+  - id: pacs_erm_seed2
+    algorithm: ERM
+    test_envs: [2]  # photo
+    seed: 2
+    hparams: {batch_size: 32, lr: 5.0e-5, weight_decay: 0.0, num_steps: 5000}
+    expected_runtime_hours: 0.5
+    status: PENDING
+
+  # ── CausalGuard Full ────────────────────────────────────────────────────────
+  - id: pacs_cg_full_seed0
+    algorithm: CausalGuard
+    test_envs: [0]
+    seed: 0
+    hparams:
+      batch_size: 32
+      lr: 5.0e-5
+      weight_decay: 0.0
+      num_steps: 5000
+      lambda_cf: null       # USE ORIGINAL PAPER VALUE — fill in when code is located
+      lambda_y: null        # USE ORIGINAL PAPER VALUE
+      gamma: 0.60           # From Table 5 / Figure 3c
+      mask_temperature: 0.5 # From Table 7
+      tau: null             # CLARIFICATION NEEDED: was tau used in executed runs?
+      donor_cap: null       # qmax — from code
+      kl_trust_region: null # rho_q — from code
+      diversity_beta: null  # beta — from code
+      donor_count: null     # J — from code
+    expected_runtime_hours: 4.0
+    status: PENDING
+
+  - id: pacs_cg_full_seed1
+    algorithm: CausalGuard
+    test_envs: [1]
+    seed: 1
+    hparams: {batch_size: 32, lr: 5.0e-5, num_steps: 5000}  # fill from code
+    expected_runtime_hours: 4.0
+    status: PENDING
+
+  - id: pacs_cg_full_seed2
+    algorithm: CausalGuard
+    test_envs: [2]
+    seed: 2
+    hparams: {batch_size: 32, lr: 5.0e-5, num_steps: 5000}
+    expected_runtime_hours: 4.0
+    status: PENDING
+
+  # ── CausalGuard No-Re-encoding Ablation ────────────────────────────────────
+  # IMPORTANT: Confirm which variant "no_reencoding" means in the actual code:
+  #   Variant A: apply classifier to c_anchor = m(u)*u directly (consistency loss = 0)
+  #   Variant B: apply classifier to v = c_anchor + s_donor WITHOUT second mask application
+  # Must match what Table 3 reports. Currently UNCLEAR — see unresolved_items.md U5.
+
+  - id: pacs_cg_nore_seed0
+    algorithm: CausalGuard_NoReencoding     # Confirm algorithm flag in code
+    test_envs: [0]
+    seed: 0
+    hparams: {batch_size: 32, lr: 5.0e-5, num_steps: 5000}
+    expected_runtime_hours: 3.5
+    status: PENDING
+    note: "Must confirm no-reencoding variant definition against Table 3 before running"
+
+  - id: pacs_cg_nore_seed1
+    algorithm: CausalGuard_NoReencoding
+    test_envs: [1]
+    seed: 1
+    hparams: {batch_size: 32, lr: 5.0e-5, num_steps: 5000}
+    expected_runtime_hours: 3.5
+    status: PENDING
+
+  - id: pacs_cg_nore_seed2
+    algorithm: CausalGuard_NoReencoding
+    test_envs: [2]
+    seed: 2
+    hparams: {batch_size: 32, lr: 5.0e-5, num_steps: 5000}
+    expected_runtime_hours: 3.5
+    status: PENDING
+
+runtime_summary:
+  total_runs: 9
+  estimated_total_hours: 27.0   # 9 runs × ~3h avg on RTX 4080
+  sequential_days: 1.1          # ~27h running sequentially
+  gpu: RTX 4080 or 4080 Super (16 GB VRAM)
+  note: >
+    Estimates assume 5000 steps, batch=32, ResNet-50, 224x224.
+    CausalGuard is 4-8x ERM wall time due to donor policy per step.
+    After PACS validates, extend manifest to VLCS and Office-Home.
+
+storage:
+  checkpoints_per_run_gb: 0.5    # ResNet-50 checkpoint ~90 MB; keep 5 checkpoints
+  total_checkpoints_gb: 4.5
+  logs_per_run_mb: 10
+  total_dataset_gb: 5.0          # PACS + VLCS + Office-Home
+  recommend_local_ssd_gb: 50
+
+protocol_notes:
+  - "Seeds 0,1,2 used for rebuttal (original paper uses 5). Label all results reproduced_rebuttal."
+  - "test_envs cycles through all 4 PACS domains across the 3 seeds (incomplete coverage)."
+  - "For full per-domain coverage: run all 4 domains × 3 seeds = 12 runs per algorithm."
+  - "ERM reference must be run from same checkpoint and same splits as CausalGuard."
+  - "No target-domain data enters training or model selection at any point."
+  - "OOM: do NOT silently change batch size. Record OOM and either use gradient accumulation or report constraint."
+  - "Resume: all runs support --resume flag; set it by default."
