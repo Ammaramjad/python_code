@@ -98,7 +98,7 @@
 | MIRO/Causal Matching/Balancing reruns | No original code or PACS/VLCS/OH datasets in repo | Provide code + dataset path |
 | DomainNet, TerraIncognita, WILDS | Datasets absent | Provide dataset paths |
 | Independent verification of D-labeled values | No GPU or original code | Re-run from code on RTX 4090 |
-| τ value in executed runs | Unknown; Appendix K.2 discusses it | Author confirms from run config |
+| Numerical τ for the ResNet-50 runs | Not in this repository. The reply states the bound conditionally and does not give a number. | Recover the original run config only if a number is later required |
 | Anonymous code release | In preparation | — |
 | Deep nonlinear SCM (ResNet encoder) | GPU required | Provide GPU allocation |
 
@@ -114,7 +114,7 @@ Paste-ready now, with the limitations written in the replies themselves:
 
 Not ready to post as measured results: any per-domain PACS/VLCS/Office-Home MixStyle or ablation number, and any RTX wall-clock, memory, or latency number. Those jobs are listed in `results/rebuttal/pending_gpu_jobs.md`.
 
-Still needs the authors before a final submission, and does not block posting the SCM reply: the executed value of τ (z2Uv W3), and confirmation that Table 3’s no-re-encoding variant is the bypass used in the linear script.
+The reply does not state a numerical τ. Appendix K.2 does not assert a benchmark setting, and no run config in this repository records one. Whether Table 3’s no-re-encoding column is the linear script’s bypass remains unresolved; the reply says so and does not treat the linear flip rates as Table 3 or as held-out accuracy.
 
 ## Branch
 
@@ -124,4 +124,4 @@ Paste these three files only:
 - Reviewer itnv → `rebuttal/final/itnv.md`
 - Reviewer bpmm → `rebuttal/final/bpmm.md`
 
-Do not paste `rebuttal/final/complete_rebuttal.md` or `rebuttal/openreview_*.md` from older drafts. OpenReview submission is left to the authors.
+`rebuttal/final/complete_rebuttal.md` is the concatenation of those three files. Paste the three reviewer files, one comment each. OpenReview submission is left to the authors.

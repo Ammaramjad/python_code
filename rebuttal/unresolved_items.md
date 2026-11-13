@@ -16,7 +16,7 @@
 
 **Required clarification:** What was the actual τ value in the PACS/VLCS/Office-Home runs? If τ=0, the theoretical claims require qualification to: "applies to an audited version of the predictor with τ applied post-hoc" or "applies to runs where τ > 0."
 
-**Status:** UNRESOLVED. Must be addressed before finalizing response to z2Uv-W3.
+**Status:** No numerical τ is in this repository (configs, logs, checkpoints, and `scripts/run_manifest_pacs.yaml` were checked on 2026-11-13; the manifest leaves `tau` null). The paste-ready reply therefore states the bound only conditionally and does not give a number. The benchmark value itself remains unknown.
 
 ### U2: Origin of 82.37 Value
 

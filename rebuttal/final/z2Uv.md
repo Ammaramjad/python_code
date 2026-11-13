@@ -14,11 +14,15 @@ This concern is correct and is acknowledged in Appendices B and E. Re-encoding f
 
 **W3 — Bounded-loss assumption and theoretical contribution**
 
-The theorem is conditional; this is stated explicitly throughout. With the probability floor p_Y ≥ τ (Eq. 3), the loss is bounded by log(1/τ) and its Lipschitz constant in predictive TV is 1/τ. For the 0/1 loss both constants are 1. The contribution is the decomposition: terms κ, ε, ρ, ξ, η correspond to the four algorithmic components (candidate reweighting, consistency optimization, factual shift, semantic filtering, coverage gap). Without re-encoding, ε ≡ 0 regardless of the learned partition (Proposition 2), making the theorem vacuously satisfied. With re-encoding, small ε has non-trivial implications. Appendix F gives the margin-dependent link to classification error. We will add a paragraph distinguishing the decomposition contribution from a distributional-robustness certificate.
+The theorem is conditional; this is stated explicitly throughout. No numerical probability floor was recovered for the ResNet-50 runs. This repository contains no original experiment config, training log, or checkpoint metadata that records τ, and `scripts/run_manifest_pacs.yaml` leaves `tau` null. Appendix K.2, as quoted from the submitted manuscript in `docs/paper_code_discrepancies.md`, says the hypothetical probability floor is valid only for class count C < 100 and is not an asserted setting of the benchmark runs.
+
+Eq. (3) writes the C-class floor p(u) = (1 − Cτ) softmax(h_ψ(c_ϕ(u))) + τ·1. The linear SCM implements the two-class case of that formula: `_prob_floored` in `scripts/experiment_z2Uv_q1_scm.py` returns (1 − 2τ) sigmoid(logit) + τ, which is Eq. (3) when C = 2 and the positive-class probability is a sigmoid. The constant passed into the linear scripts is a script default. It is not a recovered benchmark setting, and this reply does not treat it as the value of τ used in the paper.
+
+For a predictor satisfying p_y ≥ τ, cross-entropy is bounded by log(1/τ) and is 1/τ-Lipschitz in predictive total variation. For the 0/1 loss both constants are 1. The contribution is the decomposition: the terms κ, ε, ρ, ξ, and η correspond to candidate reweighting, consistency optimization, the factual shift, semantic filtering, and the coverage gap. Without re-encoding, ε ≡ 0 regardless of the learned partition (Proposition 2), making the theorem vacuously satisfied. With re-encoding, small ε has non-trivial implications. Appendix F gives the margin-dependent link to classification error. We will add a paragraph distinguishing the decomposition contribution from a distributional-robustness certificate.
 
 **W4 — Reproducibility and tuning**
 
-Section 5.1 reports ImageNet-pretrained ResNet-50, 224×224 inputs, five runs, source-only validation selection following DomainBed. The threshold sweep in Figure 3 is post-hoc; target accuracy is not used to select the operating point γ = 0.60 (Section 5.4). Raising γ to 0.90 increases label preservation from 96.8% to 98.5% while acceptance falls from 74.6% to 29.5% and coverage from 0.78 to 0.33 (Table 5). An anonymous code release is in preparation. We will add a hyperparameter appendix specifying all swept parameters, ranges, selection criterion, and final values.
+Section 5.1 of the submitted manuscript reports ImageNet-pretrained ResNet-50, 224×224 inputs, five runs, and source-only validation selection following DomainBed. The threshold sweep in Figure 3 is post-hoc; target accuracy is not used to select the operating point γ = 0.60 (Section 5.4). As reported in manuscript Table 5, raising γ to 0.90 increases label preservation from 96.8% to 98.5% while acceptance falls from 74.6% to 29.5% and coverage from 0.78 to 0.33. An anonymous code release is in preparation. We will add a hyperparameter appendix specifying all swept parameters, ranges, selection criterion, and final values.
 
 **W5 — Realistic benchmarks**
 
@@ -32,7 +36,14 @@ Four concrete advances that we can support from the submitted manuscript or from
 
 **Q1 — Trained SCM and controlled extrapolation**
 
-*Note on the review text:* The pasted review text drops the expression after "Can you show a case where". The experiment below covers the visible requests (represented and withheld nuisance shifts). Any condition referenced in the missing clause is not claimed to have been tested.
+*Note on the review text:* The full z2Uv review is not available. The OpenReview forum for submission 61846 (https://openreview.net/forum?id=ky7kbAn5Fb) returned HTTP 403 from this environment, and the repository has no review PDF. The copied question ends at "Can you show a case where". The mathematical condition after those words was not recovered, and this experiment does not claim to test it.
+
+The experiment tests the two target conditions implemented in `scripts/experiment_z2Uv_q1_scm.py`, under the fixed label mechanism Y = sign(C):
+
+- Represented nuisance shift. Sources use P(B₁ = Y) ∈ {0.7, 0.8, 0.9} with B₂ = 0. The target uses P(B₁ = Y) = 0.6 with B₂ = 0. The analytical conditional nuisance total variation of that B₁ shift, relative to the equal-weight source mixture, is 0.20.
+- Withheld nuisance direction. The target uses P(B₁ = Y) = 0.8 and B₂ ~ Bernoulli(0.55) independent of Y. B₂ is fixed at 0 in every source, so this coordinate is constant during training. Its analytical conditional nuisance total variation is 0.55.
+
+The reported quantities are target classification error and the nuisance-only flip rate.
 
 **Feature and data-generating mechanism (documented):**
 
@@ -74,7 +85,7 @@ Source validation accuracy (ERM): 0.8678–0.8989 across seeds. No target labels
 
 **What “essentially identical” does and does not mean.** An earlier sentence said the three methods differ by at most 0.1 pp. That sentence was about this Q1 run, and it describes the **mean** paired error gap only (+0.08 pp represented, +0.06 pp withheld). It does not describe every seed. Represented error gaps run from -1.25 to +0.95 pp, and represented flip-rate gaps run from -4.65 to +2.30 pp. Full CausalGuard and no re-encoding stay within 0.05 pp on error in every seed of this file. A separate sentence in `docs/progress.md` refers to a different script, `scripts/experiment_D_synthetic_scm.py` (2D continuous correlation, 3 seeds, accuracy). On `results/rebuttal/experiment_D_synthetic_scm_20261107_000025.csv`, ERM and CausalGuard accuracies are close to each other, while the content oracle is much higher once the shortcut weakens (weakened: ERM 0.832 vs oracle 0.965). Those two statements must not be merged. SCM-B, below, is a third configuration and is not an identical-result claim. The mapping is written out in `results/rebuttal/run_reconciliation.md`.
 
-A second execution of this same Q1 script on the validated environment (Python 3.12.3, numpy 2.5.4) is preserved as `results/rebuttal/z2Uv_q1_scm_20261113_025236.csv`. Mean errors stay within 0.4 pp, but the seed lists differ; one represented flip paired difference is +8.70 pp. We report the 021503 file as the primary table and keep the later file rather than overwriting it.
+A second execution of this same Q1 script on the validated environment (Python 3.12.3, numpy 2.5.4) is preserved as `results/rebuttal/z2Uv_q1_scm_20261113_025236.csv`. Mean errors stay within 0.4 pp, but the seed lists differ; one represented flip paired difference is +8.70 pp. The 021503 file is primary because it is the first complete five-seed execution of this script and the input to `scripts/report_z2Uv_q1_table.py`. The later file is kept in the evidence index and is not averaged into the table. SCM-B, `results/rebuttal/scm_b_high_spurious_20261113_023734.csv`, is also kept there as a separate configuration.
 
 In this linear regime, source diversity across P(B₁=Y) ∈ {0.7, 0.8, 0.9} gives the supervised loss enough cross-domain signal to partly recover the content feature, so the mean error gap is small. The withheld-direction error (11.1%) is lower than the represented error (17.6%) because P(B₁=Y) = 0.8 matches the source mean, and B₂ ~ Bernoulli(0.55) is independent of Y.
 
