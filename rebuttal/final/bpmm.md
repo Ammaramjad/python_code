@@ -22,23 +22,13 @@ We correct the following specific issues:
 
 **W2 — Accuracy and known-nuisance tests for the re-encoding ablation**
 
-*Ablation path (implementation detail):* In the no-re-encoding variant, the candidate v_ij passes through the anchor's fixed soft mask m(u_i) and the shared classifier. This means the consistency loss compares factual to candidate class distributions under the shared mask: some changed donor coordinates reach the classifier through the mask's non-zero weights. For Table 3, empirical disagreement is the fraction of accepted pairs with different factual and candidate top-1 predictions. Appendix B's unchanged-anchor control (where the donor's replaceable part is discarded entirely) yields zero disagreement by construction. Table 3 and the accuracy ablation below use the same candidate pathway.
+*Ablation path (implementation detail):* In the no-re-encoding variant, the candidate v_ij passes through the anchor's fixed soft mask m(u_i) and the shared classifier. This means the consistency loss compares factual to candidate class distributions under the shared mask: some changed donor coordinates reach the classifier through the mask's non-zero weights. For Table 3, empirical disagreement is the fraction of accepted pairs with different factual and candidate top-1 predictions. Appendix B's unchanged-anchor control (where the donor's replaceable part is discarded entirely) yields zero disagreement by construction. Table 3 uses that candidate pathway. The PACS accuracy ablation that would use the same pathway was not run. The linear SCM comparison below was run.
 
-**PACS per-domain accuracy: full CausalGuard vs. no-re-encoding (5 runs; Δ = CausalGuard minus no-re-encoding; source: matched-rerun protocol):**
+**PACS accuracy ablation:** not run. The jobs `pacs_cg_full_seed0`, `pacs_cg_full_seed1`, `pacs_cg_full_seed2`, `pacs_cg_nore_seed0`, `pacs_cg_nore_seed1`, and `pacs_cg_nore_seed2` in `scripts/run_manifest_pacs.yaml` are still `PENDING`. This VM has no GPU, the training code is not in the repository, and the no-re-encoding variant that Table 3 used (bypass versus direct) is still unresolved, so we do not publish a PACS Δ. Table 2's full-model PACS macro, 90.3 ± 0.5, remains a manuscript number and is not a new ablation.
 
-| Held-out domain | No re-encoding (%) | Full CausalGuard (%) | Δ (pp) |
-|---|---|---|---|
-| Art Painting | 87.2 ± 0.8 | 88.7 ± 0.7 | +1.5 |
-| Cartoon | 85.3 ± 0.9 | 86.9 ± 0.8 | +1.6 |
-| Photo | 97.5 ± 0.3 | 97.4 ± 0.3 | −0.1 |
-| Sketch | 86.0 ± 1.0 | 88.2 ± 0.9 | +2.2 |
-| **Domain-macro average** | **89.0 ± 0.6** | **90.3 ± 0.5** | **+1.3** |
+**Known-nuisance flip tests (3D linear SCM, 5 seeds, 2000 pairs; primary CSV `results/rebuttal/z2Uv_q1_scm_20261113_021503.csv`):**
 
-The macro gain from re-encoding is 1.3 pp. Gains appear on Art Painting (+1.5 pp), Cartoon (+1.6 pp), and Sketch (+2.2 pp). Photo shows a −0.1 pp decrease (near-saturation domain). The full CausalGuard macro of 90.3 ± 0.5 matches Table 2. These values are from the author's matched-run records; independent per-seed per-domain logs are not present in this environment and require the original codebase to verify.
-
-**Known-nuisance flip tests (3D linear SCM, 5 seeds, 2000 pairs; newly measured 2026-11-13):**
-
-Under the represented nuisance shift (analytical conditional TV = 0.20, B₁ flipped): ERM 40.5 ± 2.1%, no-reenc 40.3 ± 2.0%, CausalGuard 40.3 ± 2.0%. Under the withheld B₂ direction (TV = 0.55): ERM 10.9 ± 0.8%, no-reenc 10.9 ± 0.6%, CG 10.9 ± 0.6%. In the linear setting, re-encoding produces no measurable change in nuisance-only flip sensitivity. The linear SCM uses a 3D feature vector (see z2Uv Q1 for the full specification); the CausalGuard implementation confirmed: full CG applies the mask to the recombined candidate (re-encoding path); no-reenc uses the anchor's retained features for all donors (bypass; KL = 0 by construction, Proposition 2). Raw data: `results/rebuttal/z2Uv_q1_scm_20261113_021503.csv`.
+Under the represented nuisance shift (analytical conditional TV = 0.20, B₁ flipped): ERM 40.5 ± 2.1%, no-reenc 40.3 ± 2.0%, CausalGuard 40.3 ± 2.0%. Mean paired full − ERM flip gap is −0.17 pp, but the five seeds are +1.80, +0.75, +2.30, −1.05, −4.65. Under the withheld B₂ direction (TV = 0.55): ERM 10.9 ± 0.8%, no-reenc 10.9 ± 0.6%, CG 10.9 ± 0.6% (mean paired full − ERM −0.02 pp). Mean flip rates match; individual seeds do not. Full versus no re-encoding stays within 0.05 pp on every error seed in this file. The full side-by-side table is in the response to z2Uv Q1. The linear SCM uses a 3D feature vector (see z2Uv Q1 for the full specification); the CausalGuard implementation confirmed: full CG applies the mask to the recombined candidate (re-encoding path); no-reenc uses the anchor's retained features for all donors (bypass; KL = 0 by construction, Proposition 2). Raw data: `results/rebuttal/z2Uv_q1_scm_20261113_021503.csv`.
 
 ---
 
@@ -46,9 +36,9 @@ Under the represented nuisance shift (analytical conditional TV = 0.20, B₁ fli
 
 This concern is correct. The key distinction is: a feature can be both source-stable and spurious. The mask selects for source-stability, not causal relevance with respect to unseen targets. Appendix B states: "Mask leakage. The gate can encode information about the whole input through its weights, even if only a few output coordinates remain." Appendix E: "If all real examples share the same shortcut, arbitrary feature extrapolation need not discover which change preserves the label."
 
-In the 3D linear SCM (z2Uv Q1 protocol; 5 seeds; source P(B₁=Y) ∈ {0.7, 0.8, 0.9}), mean mask weights are: content x_c ≈ 0.89, nuisance x_s1 ≈ 0.71, nuisance x_s2 ≈ 0.52. The content dimension receives the highest weight in all 5 seeds; x_s2 (always constant during training) receives the lowest. The mask is directionally correct (content > spurious) but does not achieve clean causal separation. In a complementary diagnostic with uniform high spurious correlation (all sources P(B₁=Y) = 0.9), the mask weights x_s1 more strongly (≈ 0.81) because the supervised loss cannot distinguish content from nuisance — confirming the stated limitation. These linear results are consistent with the PACS accuracy ablation showing a +1.3 pp macro gain: the deep model's higher-dimensional representation space allows the consistency loss to provide additional separating signal not achievable in the linear regime.
+In the 3D linear SCM (z2Uv Q1 protocol; 5 seeds; source P(B₁=Y) ∈ {0.7, 0.8, 0.9}), mean mask weights are: content x_c ≈ 0.89, nuisance x_s1 ≈ 0.71, nuisance x_s2 ≈ 0.52. The content dimension receives the highest weight in all 5 seeds; x_s2 (always constant during training) receives the lowest. The mask is directionally correct (content above the nuisance coordinates) but does not achieve a clean separation, and the mean error gap versus ERM is under 0.1 pp while individual seeds move by as much as 1.25 pp. In SCM-B, with every source at P(B₁=Y) = 0.9, the reversed-target paired gap is about +0.96 pp (CausalGuard worse than ERM) and the mask weight on x_s1 rises to about 0.81. That is the Appendix E failure case on this linear model. It is not evidence that a ResNet-50 PACS ablation gains 1.3 pp; that image ablation was not run.
 
-Whether the deep mask reliably separates causally robust from spurious source-stable features remains open. We will make this limitation more prominent in the revised manuscript.
+Whether the deep mask separates causally robust features from spurious source-stable features remains open. We will state that limitation in the revised manuscript.
 
 ---
 

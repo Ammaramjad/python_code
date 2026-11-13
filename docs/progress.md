@@ -1,8 +1,10 @@
 # Progress Log — CausalGuard Rebuttal
 
-**Last updated:** 2026-11-07  
-**Branch:** cursor/causalguard-rebuttal-96ab  
-**Agent environment:** Cloud Agent VM (Linux, no GPU)
+**Last updated:** 2026-11-13  
+**Branch:** cursor/rebuttal-evidence-9bc8  
+**Agent environment:** Cloud Agent VM (Linux, no GPU). Python 3.12.3. Install script `scripts/cloud_agent_install.sh` pins numpy 2.5.4, pandas 2.3.3, scikit-learn 1.9.1, matplotlib 3.11.2, seaborn 0.13.2, joblib 1.6.0, librosa 0.11.0, soundfile 0.14.0, tensorflow 2.21.0.
+
+The sentence “ERM and CausalGuard have near-identical accuracy” in the 2026-11-07 section below is about Experiment D only (`scripts/experiment_D_synthetic_scm.py`, `results/rebuttal/experiment_D_synthetic_scm_20261107_000025.csv`). It is not the z2Uv Q1 run. The Q1 five-seed table, the numpy 2.5.4 replication, and SCM-B are separated in `results/rebuttal/run_reconciliation.md`. PACS ablation, matched MixStyle, and GPU profiling were not started; see `results/rebuttal/pending_gpu_jobs.md`.
 
 ---
 

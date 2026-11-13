@@ -1,5 +1,7 @@
 # Response to Reviewer itnv — CausalGuard ICLR 2027
 
+> Working draft. The paste-ready reply is `rebuttal/final/itnv.md`. Per-domain and GPU-profile figures in this draft are not seed logs and are not for posting.
+
 **Submission 61846**
 
 ---

@@ -1,5 +1,7 @@
 # Response to Reviewer z2Uv — CausalGuard ICLR 2027
 
+> Working draft. The paste-ready reply is `rebuttal/final/z2Uv.md`. Do not paste this file.
+
 **Submission 61846**
 
 ---
