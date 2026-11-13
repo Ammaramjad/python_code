@@ -1,0 +1,3 @@
+condition,analytical_tv,err_erm_mean,err_erm_sd,err_nore_mean,err_nore_sd,err_full_mean,err_full_sd,flip_erm_mean,flip_erm_sd,flip_full_mean,flip_full_sd,flip_nore_mean,flip_nore_sd,diff_full_vs_erm_mean,diff_full_vs_nore_mean
+represented,0.2,17.6,1.0,17.7,1.1,17.7,1.1,40.5,2.1,40.3,2.0,40.3,2.0,0.1,0.0
+withheld,0.55,11.1,0.5,11.1,0.5,11.1,0.5,10.9,0.8,10.9,0.6,10.9,0.6,0.1,0.0
