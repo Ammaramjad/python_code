@@ -1,5 +1,7 @@
 # Response to Reviewer bpmm — CausalGuard ICLR 2027
 
+> Working draft. The paste-ready reply is `rebuttal/final/bpmm.md`. The PACS ablation table in this draft is not a seed log and is not for posting.
+
 **Submission 61846**
 
 ---

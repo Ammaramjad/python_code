@@ -4,41 +4,17 @@ Thank you for requesting a closer baseline, individual domain results, broader s
 
 **Q1 — Direct competitors**
 
-The tables below use the same ImageNet-pretrained ResNet-50, held-out-domain DomainBed splits, source-only validation checkpoint selection, and training budget as the submitted results. 20 trials per method; selection by mean source-validation accuracy. MixStyle uses the official implementation with α swept on source validation. ERM and SWAD macro averages match Table 2.
+The submitted manuscript reports dataset-macro accuracy only (Table 2): ERM 86.2 ± 0.7 / 78.5 ± 0.6 / 71.8 ± 0.8 and CausalGuard 90.3 ± 0.5 / 81.2 ± 0.4 / 75.6 ± 0.5 on PACS, VLCS, and Office-Home. Those macros are manuscript figures. This repository does not contain the per-seed, per-domain logs, the CausalGuard training code, or the datasets, and this machine has no GPU (`nvidia-smi` is absent; `scripts/verify_gpu.py` fails because PyTorch is not installed).
 
-Note on data source: the per-domain values below are from the matched-rerun protocol used to produce Table 2; independent per-seed per-domain logs were not preserved and are not present in this repository. The PACS/VLCS/Office-Home macro averages for CausalGuard (90.3±0.5, 81.2±0.4, 75.6±0.5) match the submitted manuscript. All other per-domain values are from the author's matched-run records. Matched MIRO, Causal Matching, and Causal Balancing reruns remain open; MIRO requires a frozen pretrained reference model (additional pretraining beyond ImageNet) and will be explicitly labeled when run.
+We therefore do not post a per-domain ERM, SWAD, MixStyle, or CausalGuard table. An earlier draft table averaged back to those Table 2 macros within 0.05 percentage points. That arithmetic check is necessary and not sufficient: it does not show that the domain split was measured. The draft cells are omitted here.
 
-**PACS (mean ± SD, 5 runs; held-out domain per row):**
+The matched comparison that is still required, and was not started:
 
-| Held-out domain | ERM (%) | SWAD (%) | MixStyle (%) | CausalGuard (%) | Δ CG vs SWAD (pp) |
-|---|---|---|---|---|---|
-| Art Painting | 83.8 ± 0.9 | 86.3 ± 0.8 | 86.8 ± 0.8 | 88.7 ± 0.7 | +2.4 |
-| Cartoon | 81.0 ± 1.0 | 84.9 ± 0.9 | 85.8 ± 0.9 | 86.9 ± 0.8 | +2.0 |
-| Photo | 96.2 ± 0.4 | 97.6 ± 0.4 | 97.2 ± 0.4 | 97.4 ± 0.3 | −0.2 |
-| Sketch | 83.8 ± 1.1 | 83.6 ± 1.0 | 86.0 ± 0.9 | 88.2 ± 0.9 | +4.6 |
-| **Dataset macro** | **86.2 ± 0.7** | **88.1 ± 0.6** | **88.9 ± 0.6** | **90.3 ± 0.5** | **+2.2** |
+- MixStyle, official implementation, α chosen on source validation only, ImageNet ResNet-50, DomainBed held-out splits, source-only checkpoint selection, same step budget as the submitted runs, on PACS, VLCS, and Office-Home. Intended output: `results/rebuttal/experiment_C_mixstyle.csv`.
+- The nine PACS manifest jobs in `scripts/run_manifest_pacs.yaml` (`pacs_erm_seed0` through `pacs_erm_seed2`, `pacs_cg_full_seed0` through `pacs_cg_full_seed2`, `pacs_cg_nore_seed0` through `pacs_cg_nore_seed2`) are all `PENDING`. The manifest does not cover Sketch and leaves several CausalGuard hyperparameters null.
+- MIRO, Causal Matching, and Causal Balancing remain open. MIRO uses a frozen pretrained reference beyond ImageNet initialization and will be labeled as such if it is run.
 
-**VLCS:**
-
-| Held-out domain | ERM (%) | SWAD (%) | MixStyle (%) | CausalGuard (%) | Δ CG vs SWAD (pp) |
-|---|---|---|---|---|---|
-| VOC2007 | 74.8 ± 0.9 | 75.8 ± 0.8 | 76.9 ± 0.8 | 77.9 ± 0.7 | +2.1 |
-| LabelMe | 65.3 ± 1.0 | 67.1 ± 1.0 | 68.1 ± 0.9 | 68.8 ± 0.9 | +1.7 |
-| Caltech101 | 96.1 ± 0.5 | 97.4 ± 0.4 | 97.1 ± 0.4 | 97.2 ± 0.3 | −0.2 |
-| SUN09 | 77.8 ± 0.9 | 78.1 ± 0.8 | 79.4 ± 0.7 | 80.9 ± 0.6 | +2.8 |
-| **Dataset macro** | **78.5 ± 0.6** | **79.6 ± 0.5** | **80.4 ± 0.5** | **81.2 ± 0.4** | **+1.6** |
-
-**Office-Home:**
-
-| Held-out domain | ERM (%) | SWAD (%) | MixStyle (%) | CausalGuard (%) | Δ CG vs SWAD (pp) |
-|---|---|---|---|---|---|
-| Art | 63.4 ± 1.0 | 66.2 ± 0.9 | 68.0 ± 0.8 | 69.4 ± 0.7 | +3.2 |
-| Clipart | 55.1 ± 1.1 | 57.8 ± 1.0 | 59.4 ± 0.9 | 59.8 ± 0.8 | +2.0 |
-| Product | 81.5 ± 0.7 | 83.0 ± 0.6 | 83.5 ± 0.6 | 84.3 ± 0.5 | +1.3 |
-| Real World | 87.2 ± 0.7 | 88.2 ± 0.6 | 88.5 ± 0.5 | 88.9 ± 0.4 | +0.7 |
-| **Dataset macro** | **71.8 ± 0.8** | **73.8 ± 0.7** | **74.9 ± 0.6** | **75.6 ± 0.5** | **+1.8** |
-
-CausalGuard gains over SWAD on 10 of 12 per-domain conditions. It trails by 0.2 pp on PACS Photo and VLCS Caltech101 — both near-saturation domains where gains are small for all methods. We report these negative per-domain results.
+What we did measure on CPU is the controlled SCM comparison in the response to z2Uv Q1 (ERM, full CausalGuard, and no re-encoding, with error, flip rate, and paired seed differences). That is not a substitute for the image-benchmark rerun.
 
 ---
 
@@ -50,7 +26,7 @@ DomainNet, TerraIncognita, and iWildCam remain open evaluations. The SCM experim
 
 **Q3 — Individual held-out domains**
 
-Per-domain results are in the tables in Q1. CausalGuard trails SWAD on the two near-saturation domains (PACS Photo −0.2 pp, VLCS Caltech101 −0.2 pp). All 12 per-domain values are reported; none are withheld. The domain-macro protocol follows Appendix J: D⁻¹ Σ_d a_{bdr} per run, then mean and SD over 5 runs.
+Per-domain numbers are not available to post. The manuscript reports dataset macros (Table 2) under the Appendix J aggregation, domain-macro score D⁻¹ Σ_d a_{bdr} per run, then mean and SD over runs. The per-domain breakdown the question asks for is one of the pending GPU jobs in Q1. We do not fill that table from memory or from a draft whose seed logs are absent.
 
 ---
 
@@ -60,15 +36,12 @@ Source-validation risk is used only for checkpoint selection. A frozen source au
 
 ---
 
-**Q5 — Measured computational overhead**
+**Q5 — Computational overhead**
 
-Protocol: ResNet-50 on PACS; Sketch held out. Mixed FP16 precision, batch size 32, 5,000 steps, 5 runs. Donor-bank construction included in training time. GPU: RTX 4090, one card. Inference: 50 warm-up iterations, 200 timed repetitions.
+No GPU profile was collected. This VM has no NVIDIA device. `scripts/verify_gpu.py` does not reach a timing loop because PyTorch is not installed, and the recovered install script does not add CUDA PyTorch.
 
-| Resource metric | ERM | SWAD | CausalGuard |
-|---|---|---|---|
-| Training wall-clock per held-out-domain run (h) | 2.10 ± 0.08 | 2.80 ± 0.11 | 4.90 ± 0.19 |
-| Peak training GPU memory (GB) | 8.4 ± 0.1 | 8.7 ± 0.1 | 14.2 ± 0.3 |
-| Batch-1 inference latency (ms/image) | 7.8 ± 0.2 | 7.8 ± 0.2 | 8.6 ± 0.3 |
-| Batch-32 inference throughput (images/s) | 405 ± 8 | 403 ± 8 | 371 ± 7 |
+The job that is still pending, and whose numbers we do not quote: ResNet-50 on PACS with Sketch held out; mixed FP16; batch size 32; 5,000 steps; 5 runs; donor-bank construction included in training time; inference after 50 warm-up iterations and 200 timed repetitions at batch 1 and batch 32; `torch.cuda.synchronize()` before each timed region. Record training wall-clock, peak GPU memory, batch-1 latency, and batch-32 throughput for ERM, SWAD, and CausalGuard. Intended output: `results/rebuttal/experiment_E_efficiency.csv`.
 
-Relative to SWAD: 1.75× training time, 1.63× peak training GPU memory, +0.8 ms batch-1 latency, −32 images/s batch-32 throughput. At deployment, only the backbone, learned mask, and classifier are used. Donor construction, compatibility screening, and the donor policy solver are training-only components absent at inference. The inference overhead above ERM is from the mask (a small MLP, one forward pass). Note: these measurements were taken on the RTX 4090 described above; independent hardware verification requires the original codebase.
+At deployment the manuscript uses the backbone, learned mask, and classifier only. Donor construction, compatibility screening, and the donor policy solver are training-only. That architectural statement is not a measured latency.
+
+CPU wall times we did record, and which are not GPU profiles: the primary z2Uv Q1 script finishes in well under a minute per the run log, and the 2026-11-13 replication on this VM took 30.5 s. Those times are for the 3D logistic SCM, not ResNet-50.

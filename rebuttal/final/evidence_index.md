@@ -104,12 +104,21 @@
 
 ---
 
-## 5. Draft author-provided values (D) — require GPU verification
+## 5. Draft author-provided values (D) — not in the paste-ready replies
 
-**Source:** `CausalGuard_ICLR2027_Rebuttal_Reviewer_Revision_f5c1.docx` (uploaded 2026-11-07)  
-**Blocker:** Original CausalGuard training code, PACS/VLCS/Office-Home datasets not present in this repository.
+**Source:** `CausalGuard_ICLR2027_Rebuttal_Reviewer_Revision_f5c1.docx` (uploaded 2026-11-07). The docx is not in this repository.  
+**Blocker:** Original CausalGuard training code, PACS/VLCS/Office-Home datasets, and a GPU are not available here.
 
-The macro averages for CausalGuard (90.3, 81.2, 75.6) match Table 2 and are confirmed. The per-domain breakdowns and ablation rows are from the docx and require code-level verification.
+On 2026-11-13 the domain cells in that draft were checked only for arithmetic: their unweighted means match the displayed dataset macros within 0.05 percentage points, including the manuscript Table 2 macros. PACS MixStyle's displayed macro (88.9) is 0.05 below the mean of its displayed domain cells (88.95). That check does not verify the cells. They were removed from `rebuttal/final/z2Uv.md`, `rebuttal/final/itnv.md`, and `rebuttal/final/bpmm.md`.
+
+## 5b. Side-by-side Q1 table and second run
+
+| Artifact | Role |
+|---|---|
+| `results/rebuttal/z2Uv_q1_side_by_side_20261113_021503.md` | Primary five-seed table regenerated from the raw CSV |
+| `results/rebuttal/z2Uv_q1_scm_20261113_025236.csv` | Second run of the same script on Python 3.12.3 / numpy 2.5.4; preserved, not a replacement |
+| `results/rebuttal/run_reconciliation.md` | Which “identical” sentence refers to Experiment D, Q1, the replication, and SCM-B |
+| `results/rebuttal/pending_gpu_jobs.md` | GPU jobs not started |
 
 | Value | Response used in | Classification |
 |---|---|---|
