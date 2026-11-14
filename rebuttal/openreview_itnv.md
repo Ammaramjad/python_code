@@ -6,7 +6,9 @@ Thank you for requesting a closer baseline, individual domain results, broader s
 
 The submitted manuscript reports dataset-macro accuracy only (Table 2): ERM 86.2 ± 0.7 / 78.5 ± 0.6 / 71.8 ± 0.8 and CausalGuard 90.3 ± 0.5 / 81.2 ± 0.4 / 75.6 ± 0.5 on PACS, VLCS, and Office-Home. Those macros are manuscript figures. This repository does not contain the per-seed, per-domain logs, the CausalGuard training code, or the datasets, and this machine has no GPU (`nvidia-smi` is absent; `scripts/verify_gpu.py` fails because PyTorch is not installed).
 
-We therefore do not post a per-domain ERM, SWAD, MixStyle, or CausalGuard table. An earlier draft table averaged back to those Table 2 macros within 0.05 percentage points. That arithmetic check is necessary and not sufficient: it does not show that the domain split was measured. The draft cells are omitted here.
+We therefore do not post a per-domain ERM, SWAD, MixStyle, or CausalGuard table. Draft domain cells are omitted.
+
+These requested experiments are still open, and this reply contains none of their figures: per-domain results on PACS, VLCS, and Office-Home; a matched MixStyle comparison; the PACS re-encoding accuracy ablation; and GPU training time, peak memory, and inference timing.
 
 The matched comparison that is still required, and was not started:
 

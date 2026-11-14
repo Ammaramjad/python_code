@@ -115,28 +115,30 @@ On 2026-11-13 the domain cells in that draft were checked only for arithmetic: t
 
 | Artifact | Role |
 |---|---|
-| `results/rebuttal/z2Uv_q1_side_by_side_20261113_021503.md` | Primary five-seed table regenerated from the raw CSV |
-| `results/rebuttal/z2Uv_q1_scm_20261113_025236.csv` | Second run of the same script on Python 3.12.3 / numpy 2.5.4; preserved, not a replacement |
+| `results/rebuttal/z2Uv_q1_scm_20261113_021503.csv` | Primary raw five-seed file. It is primary because it is the first complete five-seed execution of `scripts/experiment_z2Uv_q1_scm.py` and the input to `scripts/report_z2Uv_q1_table.py`. The reply table is computed from this file only. |
+| `results/rebuttal/z2Uv_q1_side_by_side_20261113_021503.md` | Side-by-side rendering of the primary CSV |
+| `results/rebuttal/z2Uv_q1_scm_20261113_025236.csv` | Later run of the same script on Python 3.12.3 / numpy 2.5.4. Kept. Not averaged into the reply table, because seed-level errors differ. |
+| `results/rebuttal/scm_b_high_spurious_20261113_023734.csv` | Separate SCM-B configuration (every source has P(B₁=Y)=0.9). Kept. Not part of the Q1 table. |
 | `results/rebuttal/run_reconciliation.md` | Which “identical” sentence refers to Experiment D, Q1, the replication, and SCM-B |
 | `results/rebuttal/pending_gpu_jobs.md` | GPU jobs not started |
 
 | Value | Response used in | Classification |
 |---|---|---|
-| PACS Art Painting CG 88.7 ± 0.7 % | itnv Q1, bpmm W2 | D |
-| PACS Cartoon CG 86.9 ± 0.8 % | itnv Q1, bpmm W2 | D |
-| PACS Photo CG 97.4 ± 0.3 % | itnv Q1, bpmm W2 | D |
-| PACS Sketch CG 88.2 ± 0.9 % | itnv Q1, bpmm W2 | D |
-| PACS Art no-reenc 87.2 ± 0.8 % | bpmm W2 | D |
-| PACS Cartoon no-reenc 85.3 ± 0.9 % | bpmm W2 | D |
-| PACS Photo no-reenc 97.5 ± 0.3 % | bpmm W2 | D |
-| PACS Sketch no-reenc 86.0 ± 1.0 % | bpmm W2 | D |
-| PACS macro no-reenc 89.0 ± 0.6 % | bpmm W2 | D |
-| MixStyle PACS/VLCS/OH per-domain | itnv Q1 | D |
-| ERM/SWAD per-domain PACS/VLCS/OH | itnv Q1 | D |
-| Training time CG 4.90 ± 0.19 h | itnv Q5 | D |
-| Peak GPU memory CG 14.2 ± 0.3 GB | itnv Q5 | D |
-| Batch-1 latency CG 8.6 ± 0.3 ms | itnv Q5 | D |
-| Batch-32 throughput CG 371 ± 7 images/s | itnv Q5 | D |
+| PACS Art Painting CG 88.7 ± 0.7 % | excluded from paste-ready replies | D |
+| PACS Cartoon CG 86.9 ± 0.8 % | excluded from paste-ready replies | D |
+| PACS Photo CG 97.4 ± 0.3 % | excluded from paste-ready replies | D |
+| PACS Sketch CG 88.2 ± 0.9 % | excluded from paste-ready replies | D |
+| PACS Art no-reenc 87.2 ± 0.8 % | excluded from paste-ready replies | D |
+| PACS Cartoon no-reenc 85.3 ± 0.9 % | excluded from paste-ready replies | D |
+| PACS Photo no-reenc 97.5 ± 0.3 % | excluded from paste-ready replies | D |
+| PACS Sketch no-reenc 86.0 ± 1.0 % | excluded from paste-ready replies | D |
+| PACS macro no-reenc 89.0 ± 0.6 % | excluded from paste-ready replies | D |
+| MixStyle PACS/VLCS/OH per-domain | excluded from paste-ready replies | D |
+| ERM/SWAD per-domain PACS/VLCS/OH | excluded from paste-ready replies | D |
+| Training time CG 4.90 ± 0.19 h | excluded from paste-ready replies | D |
+| Peak GPU memory CG 14.2 ± 0.3 GB | excluded from paste-ready replies | D |
+| Batch-1 latency CG 8.6 ± 0.3 ms | excluded from paste-ready replies | D |
+| Batch-32 throughput CG 371 ± 7 images/s | excluded from paste-ready replies | D |
 
 ---
 
@@ -147,6 +149,6 @@ On 2026-11-13 the domain cells in that draft were checked only for arithmetic: t
 | MIRO/Causal Matching/Causal Balancing reruns | Original code not in repo; PACS/VLCS/OH datasets absent | Provide code + datasets path; run `python train.py --algorithm MIRO --dataset PACS` |
 | DomainNet, TerraIncognita, WILDS | Datasets not available | Provide dataset paths |
 | Per-seed per-domain GPU logs (PACS/VLCS/OH) | Original training runs not preserved | Re-run from code |
-| τ value in executed runs | Requires author to confirm from run config | Check `config.py` or run log for `tau=` |
+| Numerical τ for the ResNet-50 runs | No config, log, or checkpoint in this repository records it. `scripts/run_manifest_pacs.yaml` has `tau: null`. Appendix K.2 says the floor is not an asserted benchmark setting. The paste-ready reply states the bound only for a predictor with p_y ≥ τ and does not give a number. The linear scripts' default is a script constant for the C=2 case of Eq. (3); it is not the benchmark value. | Recover the original run config if a number is required later |
 | Anonymous code release | In preparation | N/A |
 | Independent efficiency measurement | GPU + original code required | Profile with `scripts/profile_efficiency.py` (to be written) |
