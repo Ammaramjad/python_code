@@ -108,9 +108,9 @@
 
 Paste-ready now, with the limitations written in the replies themselves:
 
-- `rebuttal/final/z2Uv.md` — SCM table is regenerated from `results/rebuttal/z2Uv_q1_scm_20261113_021503.csv`. Mean error gaps are small; seed-level gaps are listed and are not all within 0.1 pp.
-- `rebuttal/final/itnv.md` — manuscript Table 2 macros only. Per-domain MixStyle table and GPU profile are explicitly not posted.
-- `rebuttal/final/bpmm.md` — notation and coverage text, plus the measured linear flip test. The PACS re-encoding accuracy table is explicitly not posted.
+- `rebuttal/final/z2Uv.md` — SCM table is the primary five-seed CSV. The flip metric resamples observation noise on all three coordinates. Mean paired error gaps are small; seed-level gaps are listed separately.
+- `rebuttal/final/itnv.md` — manuscript Table 2 macros only. Per-domain results, matched MixStyle, the PACS accuracy ablation, and GPU timing are still open.
+- `rebuttal/final/bpmm.md` — Table 3 is accepted-pair disagreement. The linear flip rate and held-out accuracy are separate. The zero-KL claim is the unchanged-anchor bypass only.
 
 Not ready to post as measured results: any per-domain PACS/VLCS/Office-Home MixStyle or ablation number, and any RTX wall-clock, memory, or latency number. Those jobs are listed in `results/rebuttal/pending_gpu_jobs.md`.
 
