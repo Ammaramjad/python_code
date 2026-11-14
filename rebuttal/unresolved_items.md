@@ -52,7 +52,15 @@ The paper uses term "No re-encoding" in Table 3. The disagreement value (5.9%) i
 
 **Required:** Exact implementation of the no-re-encoding variant in Table 3.
 
-**Status:** UNRESOLVED. Affects Experiment B design.
+**Status:** UNRESOLVED for the manuscript implementation. The linear ablation uses the unchanged-anchor bypass, whose KL is identically zero. Table 3's 5.9% disagreement is not that bypass.
+
+### U6: Missing mathematical condition in z2Uv Q1
+
+**Why this matters:** The copied review ends at "Can you show a case where". The OpenReview forum for submission 61846 (https://openreview.net/forum?id=ky7kbAn5Fb) returned HTTP 403 on 2026-11-14, and the repository has no review PDF. The expression after those words was not recovered.
+
+**What the experiment does test:** the represented B₁ shift (analytical TV 0.20) and the withheld B₂ direction (analytical TV 0.55), with the paired prediction flip rate defined in `scripts/experiment_z2Uv_q1_scm.py`.
+
+**Status:** UNRESOLVED. The missing clause is not stated in the reviewer-facing reply. Do not claim it was tested.
 
 ---
 

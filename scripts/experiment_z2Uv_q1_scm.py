@@ -3,7 +3,7 @@ Experiment: Synthetic SCM per z2Uv Q1 Exact Specification
 ===========================================================
 Implements the protocol described in the z2Uv Q1 rebuttal response:
 
-  - Labels: Y = sign(C), C ~ N(0,1) (latent Gaussian content)
+  - Labels: Y = 1{C > 0}, C ~ N(0,1) (latent Gaussian content)
   - Observed content feature: x_c = C + epsilon_c, epsilon_c ~ N(0, sigma_c^2)
   - Two nuisance bits: B1 (correlated with Y per P(B1=Y)), B2 (independent binary)
   - Observed nuisance features:
@@ -12,9 +12,11 @@ Implements the protocol described in the z2Uv Q1 rebuttal response:
   - Full feature vector: x = [x_c, x_s1, x_s2]
 
 Feature mechanism (documented):
-  B1 shifts x_s1 by +mu when B1=1 (i.e., B1=Y) and -mu when B1=0 (B1 != Y).
-  B2 shifts x_s2 by +mu when B2=1 and -mu when B2=0.
-  In source domains, B2=0 always => x_s2 has fixed mean -mu with noise.
+  B1 = 1 gives x_s1 the +mu signal and B1 = 0 gives the -mu signal.
+  P(B1=Y) controls the association between that bit and the label.
+  B2 = 1 gives x_s2 the +mu signal and B2 = 0 gives the -mu signal.
+  In source domains the bit B2 is fixed at 0, so x_s2 has mean -mu.
+  The coordinate still varies because observation noise is resampled.
   In withheld target, B2 ~ Bernoulli(0.55) independent of Y => x_s2 varies freely.
 
 Withheld-direction nuisance transformation vs. appended-zero input:
@@ -63,7 +65,9 @@ Analytical conditional nuisance TV derivation:
 Protocol:
   - 5 seeds (per z2Uv Q1 specification)
   - 2000 paired evaluations per target condition
-  - Nuisance-only flip pairs: content C and label Y fixed; B1 (or B2) flipped
+  - Paired prediction flips: C, Y, and the unflipped nuisance bit are held fixed.
+    Observation noise is drawn independently for both pair members on all three coordinates.
+    The named nuisance bit (B1 or B2) is also flipped.
   - Models: ERM, no-re-encoding ablation, full CausalGuard
   - Source-only validation for checkpoint selection (no target labels used)
   - All seeds run; negative/inconclusive results retained and reported
@@ -147,12 +151,10 @@ def sample_domain(n, p_b1_eq_y, p_b2_eq_1, rng):
 
 def sample_nuisance_only_pairs(n_pairs, p_b1_eq_y, p_b2_eq_1, flip_var, rng):
     """
-    Sample n_pairs nuisance-only pairs: content C and label Y are fixed;
-    the specified nuisance bit (B1 or B2) takes both values (0 and 1).
-    Each pair has:
-      - Same C (and hence same Y)
-      - Anchor: original B1, B2
-      - Perturbed: B1 flipped (if flip_var='B1') or B2 flipped (if flip_var='B2')
+    Paired prediction flip with resampled observation noise.
+    Each pair holds latent content C, label Y, and the unflipped nuisance bit fixed.
+    The named bit is flipped. make_X draws fresh observation noise on x_c, x_s1,
+    and x_s2 for the anchor and again for the perturbed member.
     Returns: X_anchor [n_pairs, 3], X_perturbed [n_pairs, 3], Y [n_pairs]
     """
     C = rng.standard_normal(n_pairs)

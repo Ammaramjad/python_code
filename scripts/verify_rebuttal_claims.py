@@ -43,6 +43,15 @@ BANNED = [
     "τ = 0.05",
     "τ=0.05",
     "tau=0.05",
+    "the only change",
+    "nuisance-only",
+    "when B₁ = Y",
+    "HTTP 403",
+    "this VM",
+    "nvidia-smi",
+    "pending_gpu_jobs",
+    "An earlier sentence",
+    "run_manifest",
 ]
 
 
@@ -116,8 +125,16 @@ def main():
     if len(side_rows) != 4:
         errors += fail(f"expected 4 side-by-side rows, found {len(side_rows)}")
     for row in side_rows:
-        if row not in texts["z2Uv"] or row not in written:
-            errors += fail(f"table row missing from the reply: {row[:80]}")
+        cells = [cell.strip() for cell in row.strip().strip("|").split("|")]
+        for cell in cells[2:]:
+            if cell not in texts["z2Uv"] or cell not in written:
+                errors += fail(f"numeric table cell missing from the reply: {cell}")
+
+    sampler = impl.split("def sample_nuisance_only_pairs", 1)[1].split("# ── Sigmoid", 1)[0]
+    if sampler.count("rng.normal") != 3 or "X_anchor" not in sampler or "X_perturbed" not in sampler:
+        errors += fail("pair sampler does not resample observation noise for both members")
+    if "B1 = 1 gives x_s1 the +mu signal" not in impl:
+        errors += fail("script comment still ties the +mu signal to B1=Y")
 
     rows = load(PRIMARY)
     by_seed = defaultdict(list)
@@ -170,15 +187,15 @@ def main():
         errors += fail(f"CSV analytical_tv is {tv_by_cond}")
 
     for phrase in (
-        "021503.csv",
-        "025236.csv",
-        "scm_b_high_spurious_20261113_023734.csv",
-        "first complete five-seed execution",
         "mean +0.08",
         "-1.25",
         "+0.06",
-        "Can you show a case where",
-        "HTTP 403",
+        "paired prediction flip rate with resampled observation noise",
+        "B₁ = 1 gives the +1.5 signal",
+        "B₁ = 0 gives the −1.5 signal",
+        "not the only input that changes",
+        "identically zero",
+        "which is Eq. (3) when C = 2",
     ):
         if phrase not in texts["z2Uv"]:
             errors += fail(f"z2Uv missing {phrase!r}")
@@ -226,14 +243,19 @@ def main():
         if phrase not in texts["itnv"]:
             errors += fail(f"itnv missing {phrase!r}")
 
+    unresolved = (ROOT / "rebuttal" / "unresolved_items.md").read_text()
+    if "Can you show a case where" not in unresolved:
+        errors += fail("missing Q1 clause is not flagged in unresolved_items.md")
+
     for phrase in (
         "prediction disagreement",
         "not held-out domain accuracy",
         "PACS accuracy ablation:** not run",
         "not Table 3 disagreement and not held-out accuracy",
+        "paired prediction flip rate with resampled observation noise",
         "40.5 ± 2.1%",
-        "+0.08 pp",
-        "−1.25 pp",
+        "+0.08 percentage points",
+        "−1.25 percentage points",
     ):
         if phrase not in texts["bpmm"]:
             errors += fail(f"bpmm missing {phrase!r}")

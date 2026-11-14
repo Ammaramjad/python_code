@@ -40,11 +40,11 @@
 | CG ≡ no-reenc masks (differ < 0.002) | mask_full_* vs mask_nore_* | N |
 
 **SCM implementation verification (from code inspection, `scripts/experiment_z2Uv_q1_scm.py`):**
-- Full CausalGuard re-encoding path (lines 189–192): `c_v = m * v_ij` where `v_ij = c_anchor + (1-m)*x_donor` — mask applied to recombined candidate
-- No-reenc path (lines 194–196): `c_v = np.tile(c_i, (len(didx), 1))` — anchor features repeated; KL(p_anchor ‖ p_anchor) = 0 by construction → Proposition 2 confirmed
-- Shared splits: same `X_tr, Y_tr, X_val, Y_val` used for all three models per seed
-- Source-only checkpoint selection: val accuracy computed only on source split (lines 251–256)
-- No target labels used at any point
+- `sample_nuisance_only_pairs` holds C, Y, and the unflipped bit fixed, flips the named bit, and calls `make_X` twice. Each call draws independent N(0, 0.5²) noise on x_c, x_s1, and x_s2. The flip rate is therefore a paired prediction flip rate with resampled observation noise.
+- B₁ = 1 sets the x_s1 signal to +1.5 and B₁ = 0 sets it to −1.5. P(B₁ = Y) is the sampling association, not the sign of the signal. The training bit B₂ is fixed at 0; x_s2 still varies through noise.
+- Full CausalGuard: `c_v = m * v_ij` with `v_ij = c_anchor + (1-m)*x_donor`.
+- Unchanged-anchor bypass: `c_v = np.tile(c_i, ...)`. The consistency KL is identically zero in this arm only. Manuscript Table 3 reports 5.9% disagreement, so that column is not this bypass.
+- Shared splits and source-only checkpoint selection. No target labels used.
 
 ---
 
