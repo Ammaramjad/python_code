@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --bg: #f4f1ea;
+  --ink: #1c1917;
+  --line: #65a30d;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+.en {
+  display: block;
+  color: #78716c;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+@media print {
+  body { background: white; }
+  .no-print { display: none !important; }
+}

@@ -1,0 +1,218 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Shop {
+  id             String @id
+  name           String
+  code           String
+  phone          String
+  address        String
+  taxId          String
+  taxRateBps     Int
+  quoteValidDays Int
+  isDemo         Boolean @default(true)
+}
+
+model StaffUser {
+  id   String @id
+  name String
+  role String
+}
+
+model Customer {
+  id           String    @id
+  displayName  String
+  phone        String?
+  lineUserId   String?
+  isSynthetic  Boolean   @default(true)
+  inquiries    Inquiry[]
+}
+
+model Product {
+  id            String  @id
+  sku           String  @unique
+  name          String
+  brand         String
+  widthMm       Int
+  heightMm      Int
+  finish        String
+  color         String
+  marking       String
+  unitsPerBox   Int
+  stockBoxes    Int
+  active        Boolean
+  discontinued  Boolean
+  unitPriceTwd  Int
+  imagePath     String
+  visualVector  String
+  similarGroup  String
+  isDemo        Boolean @default(true)
+}
+
+model Inquiry {
+  id               String   @id
+  customerId       String
+  customer         Customer @relation(fields: [customerId], references: [id])
+  scenarioKey      String?
+  title            String
+  category         String
+  status           String
+  truthSku         String?
+  verifiedSku      String?
+  selectedProductId String?
+  matchClass       String?
+  sampleChecked    Boolean  @default(false)
+  draftFollowUp    String   @default("")
+  draftEdited      Boolean  @default(false)
+  suggestedReplies String   @default("[]")
+  closeReason      String?
+  handlingSeconds  Int      @default(0)
+  top3Snapshot     String   @default("[]")
+  isDemo           Boolean  @default(true)
+  createdAt        DateTime
+  updatedAt        DateTime
+  messages         Message[]
+  fields           ExtractedField[]
+  candidates       Candidate[]
+  quotes           Quote[]
+  audits           AuditEvent[]
+  attachments      Attachment[]
+}
+
+model Message {
+  id           String      @id
+  inquiryId    String
+  inquiry      Inquiry     @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  direction    String
+  sender       String
+  body         String
+  kind         String
+  channel      String
+  status       String
+  externalId   String?     @unique
+  quoteId      String?
+  attachmentId String?
+  attachment   Attachment? @relation(fields: [attachmentId], references: [id])
+  createdAt    DateTime
+}
+
+model Attachment {
+  id            String    @id
+  inquiryId     String
+  inquiry       Inquiry   @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  storagePath   String
+  publicPath    String?
+  mime          String
+  sizeBytes     Int
+  source        String
+  visualVector  String?
+  messages      Message[]
+}
+
+model ExtractedField {
+  id              String  @id
+  inquiryId       String
+  inquiry         Inquiry @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  key             String
+  extractedValue  String?
+  confirmedValue  String?
+  status          String
+  sourceMessageId String?
+  @@unique([inquiryId, key])
+}
+
+model Candidate {
+  id                 String  @id
+  inquiryId          String
+  inquiry            Inquiry @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  productId          String
+  rank               Int
+  score              Int
+  evidenceJson       String
+  conflictsJson      String
+  exactBlockedReason String?
+  stockNote          String?
+  classification     String
+  differences        String?
+}
+
+model Quote {
+  id              String     @id
+  inquiryId       String
+  inquiry         Inquiry    @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  number          String
+  revision        Int
+  status          String
+  classification  String
+  customerRef     String
+  productId       String
+  sku             String
+  productName     String
+  requestedQty    Int
+  suppliedQty     Int
+  boxes           Int
+  unitsPerBox     Int
+  qtyUnit         String
+  unitPriceTwd    Int
+  subtotal        Int
+  tax             Int
+  total           Int
+  taxRateBps      Int
+  deliveryNote    String
+  stockWarning    String?
+  differences     String?
+  validUntil      DateTime
+  payloadJson     String?
+  idempotencyKey  String?    @unique
+  sendError       String?
+  approvedAt      DateTime?
+  approvedBy      String?
+  sentAt          DateTime?
+  respondedAt     DateTime?
+  replacedById    String?
+  createdAt       DateTime
+  lines           QuoteLine[]
+  @@unique([number, revision])
+}
+
+model QuoteLine {
+  id        String @id
+  quoteId   String
+  quote     Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  sku       String
+  name      String
+  qty       Int
+  unit      String
+  unitPrice Int
+  lineTotal Int
+}
+
+model AuditEvent {
+  id        String   @id
+  inquiryId String
+  inquiry   Inquiry  @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  at        DateTime
+  actor     String
+  action    String
+  detail    String
+}
+
+model WebhookEvent {
+  id         String   @id
+  dedupeKey  String   @unique
+  receivedAt DateTime
+}
+
+model SendAttempt {
+  id             String   @id
+  quoteId        String
+  idempotencyKey String   @unique
+  status         String
+  createdAt      DateTime
+}
