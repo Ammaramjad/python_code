@@ -180,6 +180,19 @@
   table { width: 100%; border-collapse: collapse; font-size: 14px; }
   th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; padding: 8px; border-bottom: 1px solid var(--line); }
   td { padding: 10px 8px; border-bottom: 1px solid #f0e9de; vertical-align: middle; }
+  .fine { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--card); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+  .fine th { background: #f7f1e6; letter-spacing: .04em; padding: 12px 14px; }
+  .fine td { padding: 14px; }
+  .fine tbody tr:last-child td { border-bottom: 0; }
+  .fine tbody tr:hover td { background: #fff9f2; }
+  .mono { font-family: "IBM Plex Mono", monospace; font-size: 13px; }
+  .route-id { display: inline-grid; place-items: center; min-width: 64px; height: 28px; border-radius: 8px; background: var(--navy); color: #f6efe4; font-family: "IBM Plex Mono", monospace; font-size: 12px; }
+  .cover-grid { display: grid; grid-template-columns: 280px 1fr; gap: 14px; align-items: start; }
+  .cover-card { border: 1px solid var(--line); border-radius: 16px; padding: 14px; margin-bottom: 10px; background: #fff; }
+  .cover-card h3 { margin: 0 0 4px; }
+  .report-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 14px; }
+  .kpi { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0e9de; }
+  @media (max-width: 980px) { .cover-grid, .report-grid { grid-template-columns: 1fr; } }
   .tag { display: inline-block; border-radius: 999px; padding: 2px 8px; font-size: 12px; background: var(--paper-2); }
   .tag.ok { background: var(--moss-soft); color: var(--moss); }
   .tag.wait { background: var(--gold-soft); color: var(--gold); }
@@ -379,48 +392,89 @@ function calendar() {
 }
 function routes() {
   const rows = [
-    ["L115","大樹林線","06:40–20:10","12","林以安"],
-    ["L206","八德線","06:50–21:00","14","周承恩"],
-    ["L312","蘆竹線","07:00–20:30","11","陳柏宇"],
-    ["L408","觀音線","07:20–19:40","9","黃子晴"]
+    ["L115","大樹林線","大樹林 → 桃園醫院","06:40","20:10","30 分","12","林以安","ok"],
+    ["L206","八德線","區公所 → 置地廣場","06:50","21:00","35 分","14","周承恩","wait"],
+    ["L312","蘆竹線","區公所 → 南崁","07:00","20:30","40 分","11","陳柏宇","ok"],
+    ["L408","觀音線","觀音 → 新屋","07:20","19:40","45 分","9","黃子晴","ok"]
   ];
-  return `<p class="kicker">TIMETABLES</p><div class="top"><h1 class="page">${lang==="zh"?"路線與班次":"Routes"}</h1>
+  const head = lang==="zh"
+    ? ["路線","名稱","起迄","首班","末班","班距","今日班次","主責","狀態"]
+    : ["Route","Name","Ends","First","Last","Headway","Today","Lead","State"];
+  return `<p class="kicker">TIMETABLE</p><div class="top"><h1 class="page">${lang==="zh"?"路線班表":"Timetable"}</h1>
     <button class="btn inline" id="addroute">${lang==="zh"?"新增班次":"Add run"}</button></div>
-    <div class="panel"><table><thead><tr><th>ID</th><th>${lang==="zh"?"路線":"Route"}</th><th>${lang==="zh"?"時段":"Span"}</th><th>${lang==="zh"?"班次數":"Runs"}</th><th>${lang==="zh"?"主責":"Lead"}</th></tr></thead>
-    <tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+    <table class="fine"><thead><tr>${head.map(h=>`<th>${h}</th>`).join("")}</tr></thead>
+    <tbody>${rows.map(r=>`<tr>
+      <td><span class="route-id">${r[0]}</span></td><td><strong>${r[1]}</strong></td><td>${r[2]}</td>
+      <td class="mono">${r[3]}</td><td class="mono">${r[4]}</td><td class="mono">${r[5]}</td><td class="mono">${r[6]}</td><td>${r[7]}</td>
+      <td><span class="tag ${r[8]==="ok"?"ok":"wait"}">${r[8]==="ok"?(lang==="zh"?"已排滿":"Staffed"):(lang==="zh"?"有空班":"Open")}</span></td>
+    </tr>`).join("")}</tbody></table>`;
 }
 function drivers() {
-  return `<p class="kicker">ROSTER</p><div class="top"><h1 class="page">${lang==="zh"?"駕駛名冊":"Drivers"}</h1>
+  return `<p class="kicker">DRIVERS</p><div class="top"><h1 class="page">${lang==="zh"?"駕駛名冊":"Drivers"}</h1>
     <input id="q" placeholder="${lang==="zh"?"搜尋姓名或編號":"Search"}" style="width:220px"></div>
-    <div class="people" id="people">${DRIVERS.map(d=>person(d)).join("")}</div>`;
+    <table class="fine" id="people"><thead><tr>
+      <th>${lang==="zh"?"駕駛":"Driver"}</th><th>${lang==="zh"?"編號":"No."}</th><th>${lang==="zh"?"可出勤":"Window"}</th>
+      <th>${lang==="zh"?"今日班次":"Runs today"}</th><th>${lang==="zh"?"狀態":"Status"}</th>
+    </tr></thead><tbody>${DRIVERS.map(d=>personRow(d)).join("")}</tbody></table>`;
 }
-function person(d) {
+function personRow(d) {
   const label = d.status==="on"?"值勤":d.status==="leave"?"休假":"可代班";
   const en = d.status==="on"?"On duty":d.status==="leave"?"Leave":"Available";
   const cls = d.status==="on"?"ok":d.status==="leave"?"no":"wait";
-  return `<article class="person" data-name="${d.name}${d.no}"><div class="face" style="background:${d.tone}">${d.name[0]}</div><div><strong>${d.name}</strong><div class="kicker">${d.no}</div><div>${d.slot}</div><span class="tag ${cls}">${lang==="zh"?label:en}</span> · ${d.runs} ${lang==="zh"?"班":"runs"}</div></article>`;
+  return `<tr data-name="${d.name}${d.no}"><td><strong>${d.name}</strong></td><td class="mono">${d.no}</td><td class="mono">${d.slot}</td><td class="mono">${d.runs}</td><td><span class="tag ${cls}">${lang==="zh"?label:en}</span></td></tr>`;
 }
 function leavePage() {
   const mine = role==="driver";
-  return `<p class="kicker">${mine?"DRIVER":"COVER"}</p><div class="top"><h1 class="page">${lang==="zh"?(mine?"休假申請":"休假與代班"):"Leave"}</h1></div>
-    <div class="split"><form class="panel" id="leaveform"><h3>${lang==="zh"?"送出申請":"New request"}</h3>
-      <label>${lang==="zh"?"第一天":"From"}<input type="date" name="from" required value="2026-11-26"></label>
-      <label>${lang==="zh"?"最後一天":"Until"}<input type="date" name="until" required value="2026-11-26"></label>
-      <label>${lang==="zh"?"原因":"Reason"}<textarea name="reason" required maxlength="200"></textarea></label>
-      <button class="btn">${lang==="zh"?"送出":"Submit"}</button></form>
-      <div class="panel"><h3>${lang==="zh"?"申請列表":"Requests"}</h3><table><tbody id="leavelist">${leaveRows()}</tbody></table></div></div>`;
+  const openCovers = [
+    ["L206 07:30", "八德 → 置地廣場", "吳佩芬", "12:00–18:00"],
+    ["L312 11:00", "南崁 → 坑子", "林以安", "仍有空檔"]
+  ];
+  return `<p class="kicker">${mine?"DRIVER":"LEAVE & COVER"}</p><div class="top"><h1 class="page">${lang==="zh"?(mine?"休假申請":"休假與代班"):"Leave & cover"}</h1></div>
+    <div class="cover-grid">
+      <form class="panel" id="leaveform"><h3>${lang==="zh"?"送出申請":"New request"}</h3>
+        <label>${lang==="zh"?"第一天":"From"}<input type="date" name="from" required value="2026-11-26"></label>
+        <label>${lang==="zh"?"最後一天":"Until"}<input type="date" name="until" required value="2026-11-28"></label>
+        <label>${lang==="zh"?"原因":"Reason"}<textarea name="reason" required maxlength="200" placeholder="${lang==="zh"?"例如：家人就醫":"For example: family appointment"}"></textarea></label>
+        <button class="btn">${lang==="zh"?"送出":"Submit"}</button>
+      </form>
+      <div>
+        <table class="fine"><thead><tr><th>${lang==="zh"?"駕駛":"Driver"}</th><th>${lang==="zh"?"日期":"Dates"}</th><th>${lang==="zh"?"原因":"Reason"}</th><th>${lang==="zh"?"審查":"Review"}</th></tr></thead>
+        <tbody>${leaveRows()}</tbody></table>
+        ${mine?"":`<div class="panel" style="margin-top:14px"><h3>${lang==="zh"?"可代班的空班":"Open runs that need cover"}</h3>
+          ${openCovers.map(c=>`<article class="cover-card"><h3>${c[0]}</h3><p style="margin:0;color:#6d645b">${c[1]}</p><p style="margin:8px 0 0">${lang==="zh"?"建議":"Suggest"} <strong>${c[2]}</strong> · ${c[3]}</p></article>`).join("")}
+        </div>`}
+      </div>
+    </div>`;
 }
 function leaveRows() {
-  return leaves.map(l => `<tr><td>${l.who}<br><small>${l.range}</small></td><td>${l.reason}</td><td><span class="tag ${l.state==="ok"?"ok":l.state==="no"?"no":"wait"}">${l.state==="ok"?(lang==="zh"?"核准":"Approved"):l.state==="no"?(lang==="zh"?"退回":"Declined"):(lang==="zh"?"待審":"Waiting")}</span>
-    ${role==="desk"&&l.state==="wait"?`<div style="margin-top:6px;display:flex;gap:6px"><button class="ghost" data-act="ok" data-id="${l.id}">${lang==="zh"?"核准":"Approve"}</button> <button class="ghost" data-act="no" data-id="${l.id}">${lang==="zh"?"退回":"Decline"}</button></div>`:""}</td></tr>`).join("");
+  return leaves.map(l => `<tr><td><strong>${l.who}</strong></td><td class="mono">${l.range}</td><td>${l.reason}</td><td><span class="tag ${l.state==="ok"?"ok":l.state==="no"?"no":"wait"}">${l.state==="ok"?(lang==="zh"?"核准":"Approved"):l.state==="no"?(lang==="zh"?"退回":"Declined"):(lang==="zh"?"待審":"Waiting")}</span>
+    ${role==="desk"&&l.state==="wait"?`<div style="margin-top:8px;display:flex;gap:6px"><button class="ghost" data-act="ok" data-id="${l.id}">${lang==="zh"?"核准":"Approve"}</button> <button class="ghost" data-act="no" data-id="${l.id}">${lang==="zh"?"退回":"Decline"}</button></div>`:""}</td></tr>`).join("");
 }
 function reports() {
-  const rows = [["林以安",42,38],["陳柏宇",36,36],["黃子晴",31,28],["周承恩",18,12]];
-  return `<p class="kicker">NOVEMBER</p><div class="top"><h1 class="page">${lang==="zh"?"營運報表":"Reports"}</h1></div>
-    <div class="panel"><h3>${lang==="zh"?"每位駕駛服務時數":"Hours by driver"}</h3><div class="bars">${rows.map(r=>{
-      const w = Math.round(r[1]/42*100);
-      return `<div class="bar"><b>${r[0]}</b><i><span style="width:${w}%"></span></i><span>${r[1]}h</span></div>`;
-    }).join("")}</div></div>`;
+  const rows = [
+    ["林以安","L115",42,38,1280],
+    ["陳柏宇","L312",36,36,1104],
+    ["黃子晴","L408",31,28,860],
+    ["周承恩","L206",18,12,420]
+  ];
+  const head = lang==="zh"
+    ? ["駕駛","主責路線","排定時數","實際時數","載客"]
+    : ["Driver","Lead route","Scheduled","Worked","Riders"];
+  return `<p class="kicker">NOVEMBER 2026</p><div class="top"><h1 class="page">${lang==="zh"?"營運報表":"Operations report"}</h1></div>
+    <section class="statrow">
+      <article class="stat hero"><span>${lang==="zh"?"本月服務時數":"Hours this month"}</span><b>127 h</b></article>
+      <article class="stat"><span>${lang==="zh"?"完成班次":"Runs done"}</span><b>114</b></article>
+      <article class="stat"><span>${lang==="zh"?"代班":"Cover shifts"}</span><b>6</b></article>
+      <article class="stat"><span>${lang==="zh"?"載客":"Riders"}</span><b>3,664</b></article>
+    </section>
+    <div class="report-grid">
+      <div class="panel"><h3>${lang==="zh"?"每位駕駛服務時數":"Hours by driver"}</h3><div class="bars">${rows.map(r=>{
+        const w = Math.round(r[2]/42*100);
+        return `<div class="bar"><b>${r[0]}</b><i><span style="width:${w}%"></span></i><span>${r[2]}h</span></div>`;
+      }).join("")}</div></div>
+      <table class="fine"><thead><tr>${head.map(h=>`<th>${h}</th>`).join("")}</tr></thead>
+      <tbody>${rows.map(r=>`<tr><td><strong>${r[0]}</strong></td><td class="mono">${r[1]}</td><td class="mono">${r[2]} h</td><td class="mono">${r[3]} h</td><td class="mono">${r[4].toLocaleString()}</td></tr>`).join("")}</tbody></table>
+    </div>`;
 }
 function ops() {
   return `<p class="kicker">TRIP LOG</p><div class="top"><h1 class="page">${lang==="zh"?"行車紀錄":"Operations"}</h1></div>
@@ -451,7 +505,8 @@ function render() {
   const add = $("#addroute"); if (add) add.onclick = () => toast(lang==="zh"?"示範環境不寫入正式班表":"Demo only — nothing is saved to the live desk");
   const q = $("#q"); if (q) q.oninput = () => {
     const s = q.value.trim();
-    $("#people").innerHTML = DRIVERS.filter(d => (d.name+d.no).includes(s)).map(person).join("") || `<p>${lang==="zh"?"沒有符合的駕駛":"No drivers"}</p>`;
+    const body = $("#people tbody");
+    body.innerHTML = DRIVERS.filter(d => (d.name+d.no).includes(s)).map(personRow).join("") || `<tr><td colspan="5">${lang==="zh"?"沒有符合的駕駛":"No drivers"}</td></tr>`;
   };
   const lf = $("#leaveform");
   if (lf) lf.onsubmit = e => {
