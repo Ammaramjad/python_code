@@ -429,7 +429,7 @@ function leavePage() {
     ["L206 07:30", "八德 → 置地廣場", "吳佩芬", "12:00–18:00"],
     ["L312 11:00", "南崁 → 坑子", "林以安", "仍有空檔"]
   ];
-  return `<p class="kicker">${mine?"DRIVER":"LEAVE & COVER"}</p><div class="top"><h1 class="page">${lang==="zh"?(mine?"休假申請":"休假與代班"):"Leave & cover"}</h1></div>
+  return `<p class="kicker">${mine?(lang==="zh"?"駕駛中心 · 林以安":"DRIVER DESK · LIN"):"LEAVE & COVER"}</p><div class="top"><h1 class="page">${lang==="zh"?(mine?"休假申請":"休假與代班"):(mine?"Leave request":"Leave & cover")}</h1></div>
     <div class="cover-grid">
       <form class="panel" id="leaveform"><h3>${lang==="zh"?"送出申請":"New request"}</h3>
         <label>${lang==="zh"?"第一天":"From"}<input type="date" name="from" required value="2026-11-26"></label>
@@ -447,7 +447,9 @@ function leavePage() {
     </div>`;
 }
 function leaveRows() {
-  return leaves.map(l => `<tr><td><strong>${l.who}</strong></td><td class="mono">${l.range}</td><td>${l.reason}</td><td><span class="tag ${l.state==="ok"?"ok":l.state==="no"?"no":"wait"}">${l.state==="ok"?(lang==="zh"?"核准":"Approved"):l.state==="no"?(lang==="zh"?"退回":"Declined"):(lang==="zh"?"待審":"Waiting")}</span>
+  const list = role==="driver" ? leaves.filter(l => l.who==="林以安") : leaves;
+  if (!list.length) return `<tr><td colspan="4">${lang==="zh"?"尚無申請":"No requests yet"}</td></tr>`;
+  return list.map(l => `<tr><td><strong>${l.who}</strong></td><td class="mono">${l.range}</td><td>${l.reason}</td><td><span class="tag ${l.state==="ok"?"ok":l.state==="no"?"no":"wait"}">${l.state==="ok"?(lang==="zh"?"核准":"Approved"):l.state==="no"?(lang==="zh"?"退回":"Declined"):(lang==="zh"?"待審":"Waiting")}</span>
     ${role==="desk"&&l.state==="wait"?`<div style="margin-top:8px;display:flex;gap:6px"><button class="ghost" data-act="ok" data-id="${l.id}">${lang==="zh"?"核准":"Approve"}</button> <button class="ghost" data-act="no" data-id="${l.id}">${lang==="zh"?"退回":"Decline"}</button></div>`:""}</td></tr>`).join("");
 }
 function reports() {
@@ -487,13 +489,65 @@ function access() {
     <div class="panel"><table><thead><tr><th>${lang==="zh"?"帳號":"Account"}</th><th>${lang==="zh"?"角色":"Role"}</th><th>${lang==="zh"?"範圍":"Scope"}</th></tr></thead>
     <tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 }
+const FARE_RUNS = [
+  { key:"L115-1-0705", route:"L115 大樹林", lane:"1", time:"07:05", fare:860 },
+  { key:"L115-1-0920", route:"L115 大樹林", lane:"1", time:"09:20", fare:"" },
+  { key:"L115-2-1240", route:"L115 大樹林", lane:"2", time:"12:40", fare:"" }
+];
+let fareLog = [{ day:"11/24", run:"L115 · 1 · 07:05", amount:860 }];
 function fare() {
-  return `<p class="kicker">FARES</p><div class="top"><h1 class="page">${lang==="zh"?"車資回報":"Fare report"}</h1></div>
-    <form class="panel" id="fareform" style="max-width:480px"><h3>${lang==="zh"?"今日班次":"Today"}</h3>
-      <label>${lang==="zh"?"班次":"Run"}<select name="run"><option>L115 07:05</option><option>L115 09:20</option></select></label>
-      <label>${lang==="zh"?"載客人數":"Riders"}<input name="pax" type="number" min="0" value="18" required></label>
-      <label>${lang==="zh"?"備註":"Note"}<input name="note" maxlength="120"></label>
-      <button class="btn">${lang==="zh"?"送出回報":"Send"}</button></form>`;
+  return `<p class="kicker">${lang==="zh"?"駕駛中心":"DRIVER DESK"} · 林以安</p>
+    <div class="top"><h1 class="page">${lang==="zh"?"車資回報":"Fare report"}</h1></div>
+    <div class="cover-grid">
+      <form class="panel" id="fareform">
+        <h3>${lang==="zh"?"回報這一班":"Report this run"}</h3>
+        <label>${lang==="zh"?"營運日":"Service date"}<input type="date" name="day" required value="2026-11-24"></label>
+        <label>${lang==="zh"?"路線":"Route"}<select name="route" id="fare-route">${[...new Set(FARE_RUNS.map(r=>r.route))].map(r=>`<option>${r}</option>`).join("")}</select></label>
+        <label>${lang==="zh"?"組別":"Lane"}<select name="lane" id="fare-lane"></select></label>
+        <label>${lang==="zh"?"班次":"Run"}<select name="trip" id="fare-trip" required></select></label>
+        <label>${lang==="zh"?"實收車資（新臺幣）":"Fare collected (NT$)"}<input name="amount" id="fare-amount" type="number" min="0" step="1" required></label>
+        <button class="btn">${lang==="zh"?"儲存":"Save report"}</button>
+        <p class="sub" id="fare-msg"></p>
+      </form>
+      <div>
+        <table class="fine"><thead><tr>
+          <th>${lang==="zh"?"日期":"Date"}</th><th>${lang==="zh"?"班次":"Run"}</th><th>${lang==="zh"?"車資":"Fare"}</th>
+        </tr></thead><tbody id="farelog">${fareLog.map(f=>`<tr><td class="mono">${f.day}</td><td>${f.run}</td><td class="mono">NT$ ${f.amount}</td></tr>`).join("")}</tbody></table>
+        <p class="sub">${lang==="zh"?"只顯示這位駕駛今天被指派的班。金額以整數新臺幣計。":"Only runs assigned to this driver. Amounts are whole NT dollars."}</p>
+      </div>
+    </div>`;
+}
+function bindFareForm() {
+  const form = $("#fareform");
+  if (!form) return;
+  const route = $("#fare-route"), lane = $("#fare-lane"), trip = $("#fare-trip"), amount = $("#fare-amount");
+  const runs = () => FARE_RUNS.filter(r => r.route === route.value && r.lane === lane.value);
+  function fillTrips() {
+    const list = runs();
+    trip.innerHTML = list.map(r => `<option value="${r.key}">${r.lane} · ${r.time}</option>`).join("");
+    const hit = FARE_RUNS.find(r => r.key === trip.value);
+    amount.value = hit && hit.fare !== "" ? hit.fare : "";
+  }
+  function fillLanes() {
+    const lanes = [...new Set(FARE_RUNS.filter(r => r.route === route.value).map(r => r.lane))];
+    lane.innerHTML = lanes.map(n => `<option>${n}</option>`).join("");
+    fillTrips();
+  }
+  route.onchange = fillLanes;
+  lane.onchange = fillTrips;
+  trip.onchange = () => { const hit = FARE_RUNS.find(r => r.key === trip.value); amount.value = hit && hit.fare !== "" ? hit.fare : ""; };
+  fillLanes();
+  form.onsubmit = e => {
+    e.preventDefault();
+    const hit = FARE_RUNS.find(r => r.key === trip.value);
+    hit.fare = Number(amount.value);
+    const day = String(new FormData(form).get("day")).slice(5).replace("-","/");
+    const run = `${hit.route.split(" ")[0]} · ${hit.lane} · ${hit.time}`;
+    fareLog = fareLog.filter(row => !(row.day===day && row.run===run));
+    fareLog.unshift({ day, run, amount: hit.fare });
+    render();
+    toast(lang==="zh"?"已儲存":"Report saved");
+  };
 }
 
 function render() {
@@ -522,8 +576,7 @@ function render() {
     row.state = b.dataset.act;
     render();
   });
-  const ff = $("#fareform");
-  if (ff) ff.onsubmit = e => { e.preventDefault(); toast(lang==="zh"?"車資已記錄在這台瀏覽器":"Fare stored in this browser only"); };
+  bindFareForm();
 }
 
 function openTrip(id) {
