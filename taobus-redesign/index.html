@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>桃小巴 · 調度台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f4efe6;
+    --paper-2: #ebe4d6;
+    --ink: #1b1714;
+    --muted: #6d645b;
+    --line: #e2d9cb;
+    --card: #fffcf7;
+    --navy: #1a2744;
+    --navy-2: #243356;
+    --ember: #d4532b;
+    --ember-soft: #f8e4da;
+    --moss: #2f6b4f;
+    --moss-soft: #e5f0e8;
+    --gold: #a15c12;
+    --gold-soft: #f8edd8;
+    --shadow: 0 18px 40px rgba(40, 28, 16, 0.08);
+    --rail: 92px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background:
+      radial-gradient(1200px 500px at 100% -10%, #f7e7d4 0%, transparent 55%),
+      var(--paper);
+    color: var(--ink);
+    font: 15px/1.5 "Noto Sans TC", "PingFang TC", sans-serif;
+  }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+  .hidden { display: none !important; }
+
+  /* auth */
+  .auth {
+    min-height: 100%;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+  }
+  .poster {
+    position: relative;
+    overflow: hidden;
+    color: #f6efe4;
+    background: var(--navy);
+    padding: clamp(28px, 5vw, 72px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .poster::before {
+    content: "";
+    position: absolute;
+    inset: auto -20% -30% 10%;
+    height: 70%;
+    background:
+      repeating-linear-gradient(90deg, transparent 0 46px, rgba(255,255,255,.06) 46px 47px),
+      radial-gradient(circle at 30% 40%, rgba(212,83,43,.55), transparent 42%);
+    transform: rotate(-8deg);
+  }
+  .mark { display: flex; align-items: center; gap: 12px; letter-spacing: .18em; font-size: 12px; text-transform: uppercase; position: relative; }
+  .seal {
+    width: 42px; height: 42px; border-radius: 14px;
+    background: var(--ember); color: white;
+    display: grid; place-items: center;
+    font-family: "Noto Serif TC", serif; font-weight: 700; font-size: 22px;
+  }
+  .poster h1 {
+    position: relative;
+    margin: 0;
+    font-family: "Noto Serif TC", serif;
+    font-weight: 700;
+    font-size: clamp(48px, 6vw, 84px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+  .poster h1 span { display: block; font-family: "IBM Plex Mono", monospace; font-size: 14px; letter-spacing: .22em; font-weight: 400; opacity: .7; margin-bottom: 16px; }
+  .poster p { position: relative; max-width: 36ch; color: #d9d0c3; }
+  .route-pills { position: relative; display: flex; gap: 8px; flex-wrap: wrap; }
+  .route-pills b { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 6px 12px; font-weight: 500; font-size: 13px; }
+  .gate {
+    display: grid; place-items: center;
+    padding: 32px 8vw;
+  }
+  .card {
+    width: min(420px, 100%);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    box-shadow: var(--shadow);
+    padding: 28px;
+  }
+  .card h2 { font-family: "Noto Serif TC", serif; font-size: 32px; margin: 8px 0 4px; }
+  .card .sub { color: var(--muted); margin: 0 0 18px; }
+  label { display: grid; gap: 6px; font-size: 13px; font-weight: 700; margin-bottom: 12px; }
+  input, select, textarea {
+    width: 100%; border: 1px solid #d9d0c2; background: #fff; border-radius: 12px; padding: 11px 12px;
+  }
+  textarea { min-height: 88px; resize: vertical; }
+  .roles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .roles button, .btn, .ghost {
+    border-radius: 12px; border: 1px solid var(--line); background: white; padding: 10px 14px;
+  }
+  .roles button[aria-pressed="true"] { background: var(--navy); color: #f6efe4; border-color: var(--navy); }
+  .btn {
+    background: var(--ember); color: white; border: 0; font-weight: 700; width: 100%;
+  }
+  .btn.inline { width: auto; }
+  .ghost { background: transparent; }
+  .err { color: #9c2f1c; min-height: 1.2em; font-size: 13px; }
+
+  /* app shell */
+  .app { min-height: 100%; display: grid; grid-template-columns: var(--rail) 1fr; }
+  .rail {
+    background: var(--navy);
+    color: #efe7da;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 16px 8px 12px; gap: 8px;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .rail nav { display: grid; gap: 4px; width: 100%; }
+  .rail button.navbtn {
+    border: 0; background: transparent; color: #c9c0b3;
+    border-radius: 14px; padding: 8px 4px; display: grid; justify-items: center; gap: 2px;
+    font-size: 11px;
+  }
+  .rail button.navbtn svg { width: 22px; height: 22px; }
+  .rail button.navbtn.active, .rail button.navbtn:hover { background: var(--navy-2); color: white; }
+  .rail .grow { margin-top: auto; display: grid; gap: 8px; justify-items: center; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--ember); display: grid; place-items: center; font-weight: 700; }
+  .workspace { min-width: 0; padding: 22px 28px 48px; }
+  .top {
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 18px;
+  }
+  .kicker { font-family: "IBM Plex Mono", monospace; letter-spacing: .16em; font-size: 11px; color: var(--gold); margin: 0 0 4px; }
+  h1.page {
+    font-family: "Noto Serif TC", serif; font-size: clamp(28px, 3vw, 40px); margin: 0; letter-spacing: -0.03em;
+  }
+  .tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .statrow { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  .stat {
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px;
+  }
+  .stat.hero { background: var(--navy); color: #f6efe4; border: 0; }
+  .stat b { display: block; font-family: "IBM Plex Mono", monospace; font-size: 28px; font-weight: 500; }
+  .stat span { color: var(--muted); font-size: 13px; }
+  .stat.hero span { color: #c9c0b3; }
+  .board {
+    display: grid; grid-template-columns: 72px 1fr; gap: 0;
+    background: var(--card); border: 1px solid var(--line); border-radius: 20px; overflow: hidden;
+  }
+  .hours { display: grid; }
+  .hours div, .lane-hour { height: 64px; border-top: 1px dashed #eadfce; font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted); padding: 6px; }
+  .hours { padding-top: 53px; }
+  .lanes { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .lane { border-left: 1px solid var(--line); min-height: 0; }
+  .lane header { position: sticky; top: 0; background: #faf6ef; padding: 10px 12px; border-bottom: 1px solid var(--line); font-weight: 700; }
+  .lane header small { display: block; font-weight: 500; color: var(--muted); }
+  .lane-body { position: relative; height: 512px; }
+  .trip {
+    position: absolute; left: 8px; right: 8px;
+    border: 0; text-align: left; border-radius: 12px; padding: 8px 10px;
+    background: var(--ember-soft); color: #6a2b16;
+  }
+  .trip.moss { background: var(--moss-soft); color: #1d4632; }
+  .trip.gold { background: var(--gold-soft); color: #6a3d0c; }
+  .trip strong { display: block; font-size: 13px; }
+  .trip em { font-style: normal; font-family: "IBM Plex Mono", monospace; font-size: 12px; }
+  .split { display: grid; grid-template-columns: 1.3fr .7fr; gap: 14px; }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; }
+  .panel h3 { margin: 0 0 10px; font-size: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; padding: 8px; border-bottom: 1px solid var(--line); }
+  td { padding: 10px 8px; border-bottom: 1px solid #f0e9de; vertical-align: middle; }
+  .tag { display: inline-block; border-radius: 999px; padding: 2px 8px; font-size: 12px; background: var(--paper-2); }
+  .tag.ok { background: var(--moss-soft); color: var(--moss); }
+  .tag.wait { background: var(--gold-soft); color: var(--gold); }
+  .tag.no { background: var(--ember-soft); color: #8a341c; }
+  .people { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+  .person { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: grid; grid-template-columns: 48px 1fr; gap: 12px; }
+  .face { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; font-family: "Noto Serif TC", serif; font-size: 22px; color: white; }
+  .drawer {
+    position: fixed; inset: 0 0 0 auto; width: min(420px, 100%);
+    background: #fffdf9; border-left: 1px solid var(--line); box-shadow: var(--shadow);
+    padding: 24px; transform: translateX(110%); transition: transform .25s ease; z-index: 5;
+  }
+  .drawer.open { transform: none; }
+  .backdrop { position: fixed; inset: 0; background: rgba(26, 23, 20, .28); z-index: 4; }
+  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+  .day {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px; min-height: 92px; padding: 8px; text-align: left;
+  }
+  .day b { font-family: "IBM Plex Mono", monospace; }
+  .day.off { opacity: .45; }
+  .day.today { outline: 2px solid var(--ember); }
+  .bars { display: grid; gap: 10px; }
+  .bar { display: grid; grid-template-columns: 88px 1fr 48px; gap: 8px; align-items: center; font-size: 13px; }
+  .bar i { display: block; height: 8px; border-radius: 99px; background: #efe6d8; overflow: hidden; }
+  .bar i span { display: block; height: 100%; background: var(--navy); }
+  .toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--navy); color: white; padding: 10px 16px; border-radius: 999px; z-index: 6; }
+  @media (max-width: 980px) {
+    .auth, .statrow, .split, .lanes { grid-template-columns: 1fr; }
+    .app { grid-template-columns: 1fr; }
+    .rail { position: sticky; top: 0; height: auto; flex-direction: row; width: 100%; z-index: 3; overflow: auto; }
+    .rail nav { display: flex; }
+    .rail .grow { margin: 0 0 0 auto; display: flex; }
+    .board { grid-template-columns: 1fr; }
+    .hours { display: none; }
+    .lane-body { height: auto; }
+    .lane { min-height: 0; }
+    .trip { position: static; margin: 8px; }
+  }
+</style>
+</head>
+<body>
+<div id="auth" class="auth">
+  <section class="poster">
+    <div class="mark"><span class="seal">桃</span> TAOYUAN · TAOBUS</div>
+    <div>
+      <h1><span>SERVICE DESK</span>今天的班，<br>一眼就排好。</h1>
+      <p id="poster-copy">給桃園市民小巴調度員的工作台：班表、駕駛、休假代班與車資，收在同一張桌上。</p>
+    </div>
+    <div class="route-pills"><b>L115 大樹林</b><b>L206 八德</b><b>L312 蘆竹</b><b>L408 觀音</b></div>
+  </section>
+  <main class="gate">
+    <form class="card" id="signin">
+      <div class="mark"><span class="seal">桃</span> 測試環境</div>
+      <h2 id="gate-title">進入調度台</h2>
+      <p class="sub" id="gate-sub">這是介面重設計示範。任一帳號即可進入，不會連到正式系統。</p>
+      <div class="roles">
+        <button type="button" id="role-desk" aria-pressed="true">調度員</button>
+        <button type="button" id="role-driver" aria-pressed="false">駕駛</button>
+      </div>
+      <label id="lab-user">帳號<input name="username" required minlength="2" autocomplete="username" value="dispatcher"></label>
+      <label id="lab-pass">密碼<input name="password" required type="password" autocomplete="current-password" value="taobus-demo"></label>
+      <div class="err" id="err" role="alert"></div>
+      <button class="btn" type="submit">登入</button>
+    </form>
+  </main>
+</div>
+
+<div id="app" class="app hidden">
+  <aside class="rail">
+    <div class="seal" title="桃小巴">桃</div>
+    <nav id="nav"></nav>
+    <div class="grow">
+      <button class="ghost" id="lang" style="color:#efe7da;border-color:#3a4d73">EN</button>
+      <div class="avatar" id="who">調</div>
+      <button class="ghost" id="logout" style="color:#efe7da;border-color:#3a4d73;font-size:12px">登出</button>
+    </div>
+  </aside>
+  <main class="workspace" id="view"></main>
+</div>
+<div id="backdrop" class="backdrop hidden"></div>
+<aside id="drawer" class="drawer"></aside>
+<div id="toast" class="toast hidden"></div>
+
+<script>
+const I18N = {
+  zh: {
+    poster: "給桃園市民小巴調度員的工作台：班表、駕駛、休假代班與車資，收在同一張桌上。",
+    enter: "進入調度台", gate: "這是介面重設計示範。任一帳號即可進入，不會連到正式系統。",
+    desk: "調度員", driver: "駕駛", sign: "登入", out: "登出",
+    pages: [["board","今日"],["cal","月曆"],["routes","路線"],["drivers","名冊"],["leave","休假"],["reports","報表"],["ops","行車"],["access","權限"]],
+    driverPages: [["leave","休假"],["fare","車資"]],
+    boardK: "TODAY · TAIPEI", boardT: "今日調度",
+    live: "進行中的班次", assigned: "已指派", open: "待指派", cover: "待審代班",
+    lanes: ["L115 大樹林","L206 八德","L312 蘆竹","L408 觀音"]
+  },
+  en: {
+    poster: "A desk for Taoyuan minibus dispatch: timetables, drivers, cover, and fares on one surface.",
+    enter: "Open the desk", gate: "Design prototype only. Any account opens the demo. It does not touch the live system.",
+    desk: "Dispatch", driver: "Driver", sign: "Sign in", out: "Sign out",
+    pages: [["board","Today"],["cal","Month"],["routes","Routes"],["drivers","Drivers"],["leave","Leave"],["reports","Reports"],["ops","Trips"],["access","Access"]],
+    driverPages: [["leave","Leave"],["fare","Fares"]],
+    boardK: "TODAY · TAIPEI", boardT: "Today’s board",
+    live: "Trips on the board", assigned: "Assigned", open: "Open", cover: "Cover waiting",
+    lanes: ["L115 Dashi","L206 Bade","L312 Luzhu","L408 Guanyin"]
+  }
+};
+const TRIPS = [
+  { id:"T-115-0705", lane:0, start:7.1, len:1.1, name:"林以安", tone:"moss", from:"大樹林", to:"桃園醫院", pax:18, fare:0 },
+  { id:"T-206-0730", lane:1, start:7.5, len:1.3, name:"待指派", tone:"gold", from:"八德區公所", to:"置地廣場", pax:0, fare:0 },
+  { id:"T-312-0810", lane:2, start:8.15, len:1.2, name:"陳柏宇", tone:"moss", from:"蘆竹區公所", to:"南崁", pax:22, fare:0 },
+  { id:"T-408-0840", lane:3, start:8.7, len:1.4, name:"黃子晴", tone:"", from:"觀音", to:"草漯", pax:11, fare:0 },
+  { id:"T-115-0920", lane:0, start:9.3, len:1.0, name:"林以安", tone:"moss", from:"大樹林", to:"陽明公園", pax:9, fare:0 },
+  { id:"T-206-1015", lane:1, start:10.25, len:1.2, name:"周承恩", tone:"moss", from:"八德", to:"大湳", pax:16, fare:0 },
+  { id:"T-312-1100", lane:2, start:11, len:1.1, name:"待指派", tone:"gold", from:"南崁", to:"坑子", pax:0, fare:0 },
+  { id:"T-408-1330", lane:3, start:13.5, len:1.3, name:"黃子晴", tone:"", from:"草漯", to:"新屋", pax:7, fare:0 }
+];
+const DRIVERS = [
+  { name:"林以安", no:"D-014", tone:"#1a2744", runs:6, slot:"06:30–14:30", status:"on" },
+  { name:"陳柏宇", no:"D-021", tone:"#d4532b", runs:5, slot:"07:00–15:00", status:"on" },
+  { name:"黃子晴", no:"D-033", tone:"#2f6b4f", runs:4, slot:"08:00–16:30", status:"on" },
+  { name:"周承恩", no:"D-040", tone:"#a15c12", runs:5, slot:"09:00–17:00", status:"leave" },
+  { name:"吳佩芬", no:"D-018", tone:"#3d4f73", runs:0, slot:"可代班 12:00–18:00", status:"cover" }
+];
+let lang = "zh", role = "desk", page = "board", leaves = [
+  { id:1, who:"周承恩", range:"11/26–11/28", reason:"家人就醫", state:"wait" },
+  { id:2, who:"吳佩芬", range:"11/24", reason:"可代 L206 上午", state:"ok" }
+];
+const $ = s => document.querySelector(s);
+const t = () => I18N[lang];
+
+function icon(d) {
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="${d}"/></svg>`;
+}
+const ICONS = [
+  "M4 5h16v14H4z M4 9h16 M8 3v4 M16 3v4",
+  "M4 4h16v16H4z M4 9h16 M9 4v16",
+  "M4 7h16 M4 12h10 M4 17h16",
+  "M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4z M5 20a7 7 0 0 1 14 0",
+  "M6 4h12v16H6z M9 8h6 M9 12h6",
+  "M5 19V9 M10 19V5 M15 19v-7 M20 19V8",
+  "M4 16l4-8 4 5 3-6 5 9",
+  "M12 3l7 3v6c0 5-3 7-7 9-4-2-7-4-7-9V6z"
+];
+
+function renderNav() {
+  const pages = role === "driver" ? t().driverPages : t().pages;
+  if (!pages.some(([k]) => k === page)) page = pages[0][0];
+  $("#nav").innerHTML = pages.map(([k,l],i) =>
+    `<button class="navbtn ${k===page?"active":""}" data-page="${k}">${icon(ICONS[role==="driver"?(k==="fare"?6:4):i])}<span>${l}</span></button>`
+  ).join("");
+  $("#nav").querySelectorAll("button").forEach(b => b.onclick = () => { page = b.dataset.page; render(); });
+  $("#who").textContent = role === "driver" ? "駕" : "調";
+  $("#lang").textContent = lang === "zh" ? "EN" : "中";
+  $("#logout").textContent = t().out;
+}
+
+function hours() {
+  return [7,8,9,10,11,12,13,14].map(h => `<div>${String(h).padStart(2,"0")}:00</div>`).join("");
+}
+function tripStyle(tr) {
+  const top = (tr.start - 7) * 64;
+  const h = Math.max(46, tr.len * 64 - 8);
+  return `top:${top}px;height:${h}px`;
+}
+function board() {
+  const open = TRIPS.filter(x => x.name === "待指派").length;
+  const lanes = t().lanes.map((name, i) => {
+    const body = TRIPS.filter(tr => tr.lane === i).map(tr =>
+      `<button class="trip ${tr.tone}" data-trip="${tr.id}" style="${tripStyle(tr)}"><strong>${tr.name}</strong><em>${tr.id.slice(-4)} · ${tr.from}</em></button>`
+    ).join("");
+    return `<section class="lane"><header>${name}<small>${TRIPS.filter(tr=>tr.lane===i).length} ${lang==="zh"?"班":"runs"}</small></header><div class="lane-body">${body}</div></section>`;
+  }).join("");
+  return `
+    <p class="kicker">${t().boardK}</p><div class="top"><h1 class="page">${t().boardT}</h1>
+      <div class="tools"><input id="day" type="date" value="2026-11-24" style="width:auto"><button class="btn inline" id="publish">${lang==="zh"?"發布今日班表":"Publish today"}</button></div></div>
+    <section class="statrow">
+      <article class="stat hero"><span>${t().live}</span><b>8</b></article>
+      <article class="stat"><span>${t().assigned}</span><b>6</b></article>
+      <article class="stat"><span>${t().open}</span><b>${open}</b></article>
+      <article class="stat"><span>${t().cover}</span><b>1</b></article>
+    </section>
+    <div class="board"><div class="hours">${hours()}</div><div class="lanes">${lanes}</div></div>`;
+}
+function calendar() {
+  const cells = [];
+  const lead = 6; // 2026-11-01 is Sunday; week starts Monday
+  for (let i = 0; i < 42; i++) {
+    const d = i - lead + 1;
+    const inMonth = d > 0 && d <= 30;
+    const n = inMonth ? d : "";
+    const today = d === 24;
+    const dots = inMonth && d % 3 === 0 ? `<span class="tag">${lang==="zh"?"滿班":"full"}</span>` : "";
+    cells.push(`<button class="day ${inMonth?"":"off"} ${today?"today":""}"><b>${n}</b><div>${dots}</div></button>`);
+  }
+  return `<p class="kicker">NOVEMBER 2026</p><div class="top"><h1 class="page">${lang==="zh"?"排班月曆":"Schedule"}</h1></div>
+    <div class="cal">${["一","二","三","四","五","六","日"].map(x=>`<div class="kicker">${lang==="zh"?x:"MTWTFSS"[ "一二三四五六日".indexOf(x)]}</div>`).join("")}${cells.join("")}</div>`;
+}
+function routes() {
+  const rows = [
+    ["L115","大樹林線","06:40–20:10","12","林以安"],
+    ["L206","八德線","06:50–21:00","14","周承恩"],
+    ["L312","蘆竹線","07:00–20:30","11","陳柏宇"],
+    ["L408","觀音線","07:20–19:40","9","黃子晴"]
+  ];
+  return `<p class="kicker">TIMETABLES</p><div class="top"><h1 class="page">${lang==="zh"?"路線與班次":"Routes"}</h1>
+    <button class="btn inline" id="addroute">${lang==="zh"?"新增班次":"Add run"}</button></div>
+    <div class="panel"><table><thead><tr><th>ID</th><th>${lang==="zh"?"路線":"Route"}</th><th>${lang==="zh"?"時段":"Span"}</th><th>${lang==="zh"?"班次數":"Runs"}</th><th>${lang==="zh"?"主責":"Lead"}</th></tr></thead>
+    <tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+function drivers() {
+  return `<p class="kicker">ROSTER</p><div class="top"><h1 class="page">${lang==="zh"?"駕駛名冊":"Drivers"}</h1>
+    <input id="q" placeholder="${lang==="zh"?"搜尋姓名或編號":"Search"}" style="width:220px"></div>
+    <div class="people" id="people">${DRIVERS.map(d=>person(d)).join("")}</div>`;
+}
+function person(d) {
+  const label = d.status==="on"?"值勤":d.status==="leave"?"休假":"可代班";
+  const en = d.status==="on"?"On duty":d.status==="leave"?"Leave":"Available";
+  const cls = d.status==="on"?"ok":d.status==="leave"?"no":"wait";
+  return `<article class="person" data-name="${d.name}${d.no}"><div class="face" style="background:${d.tone}">${d.name[0]}</div><div><strong>${d.name}</strong><div class="kicker">${d.no}</div><div>${d.slot}</div><span class="tag ${cls}">${lang==="zh"?label:en}</span> · ${d.runs} ${lang==="zh"?"班":"runs"}</div></article>`;
+}
+function leavePage() {
+  const mine = role==="driver";
+  return `<p class="kicker">${mine?"DRIVER":"COVER"}</p><div class="top"><h1 class="page">${lang==="zh"?(mine?"休假申請":"休假與代班"):"Leave"}</h1></div>
+    <div class="split"><form class="panel" id="leaveform"><h3>${lang==="zh"?"送出申請":"New request"}</h3>
+      <label>${lang==="zh"?"第一天":"From"}<input type="date" name="from" required value="2026-11-26"></label>
+      <label>${lang==="zh"?"最後一天":"Until"}<input type="date" name="until" required value="2026-11-26"></label>
+      <label>${lang==="zh"?"原因":"Reason"}<textarea name="reason" required maxlength="200"></textarea></label>
+      <button class="btn">${lang==="zh"?"送出":"Submit"}</button></form>
+      <div class="panel"><h3>${lang==="zh"?"申請列表":"Requests"}</h3><table><tbody id="leavelist">${leaveRows()}</tbody></table></div></div>`;
+}
+function leaveRows() {
+  return leaves.map(l => `<tr><td>${l.who}<br><small>${l.range}</small></td><td>${l.reason}</td><td><span class="tag ${l.state==="ok"?"ok":l.state==="no"?"no":"wait"}">${l.state==="ok"?(lang==="zh"?"核准":"Approved"):l.state==="no"?(lang==="zh"?"退回":"Declined"):(lang==="zh"?"待審":"Waiting")}</span>
+    ${role==="desk"&&l.state==="wait"?`<div style="margin-top:6px;display:flex;gap:6px"><button class="ghost" data-act="ok" data-id="${l.id}">${lang==="zh"?"核准":"Approve"}</button> <button class="ghost" data-act="no" data-id="${l.id}">${lang==="zh"?"退回":"Decline"}</button></div>`:""}</td></tr>`).join("");
+}
+function reports() {
+  const rows = [["林以安",42,38],["陳柏宇",36,36],["黃子晴",31,28],["周承恩",18,12]];
+  return `<p class="kicker">NOVEMBER</p><div class="top"><h1 class="page">${lang==="zh"?"營運報表":"Reports"}</h1></div>
+    <div class="panel"><h3>${lang==="zh"?"每位駕駛服務時數":"Hours by driver"}</h3><div class="bars">${rows.map(r=>{
+      const w = Math.round(r[1]/42*100);
+      return `<div class="bar"><b>${r[0]}</b><i><span style="width:${w}%"></span></i><span>${r[1]}h</span></div>`;
+    }).join("")}</div></div>`;
+}
+function ops() {
+  return `<p class="kicker">TRIP LOG</p><div class="top"><h1 class="page">${lang==="zh"?"行車紀錄":"Operations"}</h1></div>
+    <div class="panel"><table><thead><tr><th>${lang==="zh"?"時間":"Time"}</th><th>${lang==="zh"?"路線":"Route"}</th><th>${lang==="zh"?"駕駛":"Driver"}</th><th>${lang==="zh"?"載客":"Riders"}</th><th>${lang==="zh"?"狀態":"State"}</th></tr></thead>
+    <tbody>${TRIPS.map(tr=>`<tr><td>${String(Math.floor(tr.start)).padStart(2,"0")}:${String(Math.round((tr.start%1)*60)).padStart(2,"0")}</td><td>${t().lanes[tr.lane]}</td><td>${tr.name}</td><td>${tr.pax}</td><td><span class="tag ${tr.name==="待指派"?"wait":"ok"}">${tr.name==="待指派"?(lang==="zh"?"未派出":"Open"):(lang==="zh"?"已完成登記":"Logged")}</span></td></tr>`).join("")}</tbody></table></div>`;
+}
+function access() {
+  const rows = [["dispatcher","調度員","班表、休假、報表"],["lin.driver","駕駛","自己的休假與車資"],["auditor","檢視","報表唯讀"]];
+  return `<p class="kicker">ACCESS</p><div class="top"><h1 class="page">${lang==="zh"?"帳號與權限":"Access"}</h1></div>
+    <div class="panel"><table><thead><tr><th>${lang==="zh"?"帳號":"Account"}</th><th>${lang==="zh"?"角色":"Role"}</th><th>${lang==="zh"?"範圍":"Scope"}</th></tr></thead>
+    <tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+function fare() {
+  return `<p class="kicker">FARES</p><div class="top"><h1 class="page">${lang==="zh"?"車資回報":"Fare report"}</h1></div>
+    <form class="panel" id="fareform" style="max-width:480px"><h3>${lang==="zh"?"今日班次":"Today"}</h3>
+      <label>${lang==="zh"?"班次":"Run"}<select name="run"><option>L115 07:05</option><option>L115 09:20</option></select></label>
+      <label>${lang==="zh"?"載客人數":"Riders"}<input name="pax" type="number" min="0" value="18" required></label>
+      <label>${lang==="zh"?"備註":"Note"}<input name="note" maxlength="120"></label>
+      <button class="btn">${lang==="zh"?"送出回報":"Send"}</button></form>`;
+}
+
+function render() {
+  renderNav();
+  const view = { board, cal: calendar, routes, drivers, leave: leavePage, reports, ops, access, fare }[page];
+  $("#view").innerHTML = view();
+  $("#view").querySelectorAll("[data-trip]").forEach(b => b.onclick = () => openTrip(b.dataset.trip));
+  const pub = $("#publish"); if (pub) pub.onclick = () => toast(lang==="zh"?"今日班表已標記為可發布":"Today’s board marked ready");
+  const add = $("#addroute"); if (add) add.onclick = () => toast(lang==="zh"?"示範環境不寫入正式班表":"Demo only — nothing is saved to the live desk");
+  const q = $("#q"); if (q) q.oninput = () => {
+    const s = q.value.trim();
+    $("#people").innerHTML = DRIVERS.filter(d => (d.name+d.no).includes(s)).map(person).join("") || `<p>${lang==="zh"?"沒有符合的駕駛":"No drivers"}</p>`;
+  };
+  const lf = $("#leaveform");
+  if (lf) lf.onsubmit = e => {
+    e.preventDefault();
+    const fd = new FormData(lf);
+    const from = String(fd.get("from")).slice(5).replace("-","/");
+    const until = String(fd.get("until")).slice(5).replace("-","/");
+    leaves.unshift({ id: Date.now(), who: role==="driver"?"林以安":"調度代填", range: from===until?from:`${from}–${until}`, reason: fd.get("reason"), state:"wait" });
+    render(); toast(lang==="zh"?"申請已列入待審":"Request is waiting for review");
+  };
+  $("#view").querySelectorAll("[data-act]").forEach(b => b.onclick = () => {
+    const row = leaves.find(l => l.id === +b.dataset.id);
+    row.state = b.dataset.act;
+    render();
+  });
+  const ff = $("#fareform");
+  if (ff) ff.onsubmit = e => { e.preventDefault(); toast(lang==="zh"?"車資已記錄在這台瀏覽器":"Fare stored in this browser only"); };
+}
+
+function openTrip(id) {
+  const tr = TRIPS.find(x => x.id === id);
+  $("#backdrop").classList.remove("hidden");
+  $("#drawer").classList.add("open");
+  $("#drawer").innerHTML = `<p class="kicker">${tr.id}</p><h2 style="font-family:'Noto Serif TC',serif;font-size:32px;margin:0 0 8px">${t().lanes[tr.lane]}</h2>
+    <p>${tr.from} → ${tr.to}</p><p>${lang==="zh"?"駕駛":"Driver"}：<strong>${tr.name}</strong></p><p>${lang==="zh"?"載客":"Riders"}：${tr.pax}</p>
+    <label>${lang==="zh"?"改派":"Reassign"}<select id="re">${DRIVERS.map(d=>`<option ${d.name===tr.name?"selected":""}>${d.name}</option>`).join("")}<option>待指派</option></select></label>
+    <button class="btn" id="saveas">${lang==="zh"?"更新這班":"Update trip"}</button>`;
+  $("#saveas").onclick = () => {
+    tr.name = $("#re").value;
+    tr.tone = tr.name === "待指派" ? "gold" : "moss";
+    closeDrawer(); render(); toast(lang==="zh"?"這班已改派（僅示範）":"Reassigned in the demo");
+  };
+}
+function closeDrawer(){ $("#drawer").classList.remove("open"); $("#backdrop").classList.add("hidden"); }
+function toast(msg){ const n=$("#toast"); n.textContent=msg; n.classList.remove("hidden"); setTimeout(()=>n.classList.add("hidden"), 2200); }
+
+$("#role-desk").onclick = () => { role = "desk"; $("#role-desk").setAttribute("aria-pressed","true"); $("#role-driver").setAttribute("aria-pressed","false"); };
+$("#role-driver").onclick = () => { role = "driver"; page="leave"; $("#role-driver").setAttribute("aria-pressed","true"); $("#role-desk").setAttribute("aria-pressed","false"); };
+$("#signin").onsubmit = e => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  if (String(fd.get("password")).length < 6) { $("#err").textContent = lang==="zh"?"密碼至少 6 個字元":"Use at least 6 characters"; return; }
+  $("#err").textContent = "";
+  $("#auth").classList.add("hidden");
+  $("#app").classList.remove("hidden");
+  render();
+};
+$("#logout").onclick = () => { $("#app").classList.add("hidden"); $("#auth").classList.remove("hidden"); closeDrawer(); };
+$("#lang").onclick = () => { lang = lang==="zh"?"en":"zh"; applyLang(); if (!$("#app").classList.contains("hidden")) render(); };
+$("#backdrop").onclick = closeDrawer;
+function applyLang(){
+  $("#poster-copy").textContent = t().poster;
+  $("#gate-title").textContent = t().enter;
+  $("#gate-sub").textContent = t().gate;
+  $("#role-desk").textContent = t().desk;
+  $("#role-driver").textContent = t().driver;
+  $("#signin button.btn").textContent = t().sign;
+  $("#lab-user").firstChild.textContent = lang==="zh"?"帳號":"Account";
+  $("#lab-pass").firstChild.textContent = lang==="zh"?"密碼":"Password";
+  document.querySelector(".gate .mark").lastChild.textContent = lang==="zh"?" 測試環境":" TEST";
+  document.documentElement.lang = lang==="zh"?"zh-Hant":"en";
+}
+</script>
+</body>
+</html>
