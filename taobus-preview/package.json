@@ -1,0 +1,9 @@
+{
+  "name": "taobus-preview",
+  "private": true,
+  "description": "Isolated bilingual TaoBus operations preview. Fictional data only.",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test/preview.test.js"
+  }
+}
