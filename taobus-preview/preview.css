@@ -1,0 +1,236 @@
+/* TaoBus operations desk. Original layout on top of the existing modules. */
+:root {
+  --ink: #1c2433;
+  --muted: #5c677a;
+  --line: #e3e7ef;
+  --paper: #eef1f6;
+  --card: #ffffff;
+  --sidebar: #161d2e;
+  --sidebar-2: #243049;
+  --accent: #2f5bea;
+  --accent-soft: #e7edfd;
+  --ok: #0e7a45;
+  --ok-soft: #e5f6ee;
+  --wait: #8a5a00;
+  --wait-soft: #fff4d8;
+  --bad: #9d2c2c;
+  --bad-soft: #fde8e6;
+  --shadow: 0 10px 30px rgba(22, 29, 46, 0.06);
+  --nav: 248px;
+  --radius: 14px;
+}
+html[data-design] body,
+html body {
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+  font-family: "Noto Sans TC", "PingFang TC", "Segoe UI", sans-serif !important;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--accent) !important;
+  outline-offset: 2px;
+}
+.shell {
+  grid-template-columns: var(--nav) minmax(0, 1fr) !important;
+  background: var(--paper);
+}
+.shell > aside {
+  background: var(--sidebar) !important;
+  color: #e7ebf5 !important;
+  padding: 20px 14px !important;
+  gap: 18px !important;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: auto;
+}
+.brand { font-size: 22px !important; letter-spacing: 0 !important; }
+.brand small { letter-spacing: 0.14em !important; color: #b7c3de !important; }
+.logo { background: #dbe4ff !important; color: #1a2a66 !important; border-radius: 12px !important; }
+.nav { gap: 4px !important; }
+.nav button,
+.nav a {
+  color: #d5dced !important;
+  border-radius: 10px !important;
+  min-height: 44px;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+}
+.nav button.active,
+.nav button[aria-current="true"] {
+  background: var(--sidebar-2) !important;
+  color: white !important;
+  box-shadow: inset 3px 0 0 #8eabff;
+}
+.nav-caption { font-size: 14px; line-height: 1.25; text-wrap: pretty; }
+.profile { border-top: 1px solid #31415f !important; color: #d5dced !important; }
+.tao-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 4% 0;
+}
+.dispatch-header { padding: 8px 4% 0 !important; }
+.dispatch-header h1,
+.content > .title {
+  font-size: clamp(26px, 3vw, 36px) !important;
+  letter-spacing: -0.03em !important;
+  color: var(--ink) !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 0 8px !important;
+}
+.content > .title:after { display: none !important; }
+.content { padding-top: 12px !important; }
+.module-surface > section,
+.panel,
+.mo-panel,
+.metric,
+.fx-card {
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow);
+}
+h3.duplicate-title { display: none !important; }
+.preview-note {
+  background: var(--accent-soft);
+  border: 1px solid #c9d6fb;
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: #1d326f;
+  font-size: 14px;
+}
+.module-controls,
+.tt-history-toolbar,
+.mo-tools,
+.sc-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.module-controls input,
+.module-controls select,
+.tt-date-nav input,
+.date-parts select,
+.panel input,
+.panel select,
+.panel textarea {
+  min-height: 40px;
+}
+.date-parts select { min-width: 4.5rem !important; }
+.lv-stats,
+.cards,
+.mo-metrics {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+.lv-stats button,
+.metric {
+  text-align: left;
+  min-height: 72px;
+}
+.lv-stats button[aria-pressed="true"] {
+  outline: 2px solid var(--accent);
+  background: var(--accent-soft) !important;
+}
+.leave-days.named-days,
+.reference-month {
+  display: grid !important;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px !important;
+}
+.leave-day,
+.reference-month > button,
+.tt-day-card {
+  min-height: 64px;
+  min-width: 0;
+}
+.leave-day small,
+.reference-month small,
+.nav-caption { overflow-wrap: anywhere; }
+.mo-scroll,
+.schedule-list,
+.module-surface table { max-width: 100%; }
+.module-surface { overflow-x: auto; }
+table { border-collapse: collapse; }
+th, td { padding: 10px 12px; }
+tbody tr:nth-child(even) { background: #f7f8fb; }
+.tag.ok, [data-status="approved"] { background: var(--ok-soft); color: var(--ok); }
+.tag.wait, [data-status="pending"] { background: var(--wait-soft); color: var(--wait); }
+.tag.no, [data-status="declined"] { background: var(--bad-soft); color: var(--bad); }
+.action, .mo-btn {
+  min-height: 40px;
+  border-radius: 10px !important;
+}
+dialog, .mo-dialog {
+  border: 0 !important;
+  border-radius: 16px !important;
+  box-shadow: var(--shadow);
+  max-width: min(720px, 96vw);
+}
+.auth, .signin { background: var(--paper) !important; }
+.poster, .ref-poster { background: var(--sidebar) !important; }
+[data-preview-map] {
+  min-height: 220px;
+  border-radius: 12px;
+  background:
+    linear-gradient(#d9e2f2, #d9e2f2) 0 40% / 100% 1px no-repeat,
+    repeating-linear-gradient(90deg, #e7eef8 0 28px, #f7f9fc 28px 56px);
+}
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr !important; }
+  .shell > aside {
+    position: sticky;
+    top: 0;
+    height: auto;
+    z-index: 5;
+    flex-direction: row !important;
+    align-items: center;
+  }
+  .nav { display: flex !important; overflow: auto; }
+  .nav button { white-space: nowrap; }
+  .profile { margin: 0 0 0 auto !important; border: 0 !important; padding: 0 !important; }
+  .brand small { display: none; }
+}
+@media (max-width: 420px) {
+  .content, .dispatch-header, .tao-toolbar { padding-left: 12px !important; padding-right: 12px !important; }
+  .leave-day, .reference-month > button { min-height: 52px; padding: 4px !important; font-size: 12px; }
+  .dispatch-header h1 { font-size: 26px !important; }
+}
+@media (pointer: coarse) {
+  .nav button, .action, .mo-btn, .date-parts select { min-height: 44px; }
+}
+
+#app #taobus-navigation {
+  background: #161d2e !important;
+  color: #e7ebf5 !important;
+}
+#app #taobus-navigation .brand,
+#app #taobus-navigation .group-label,
+#app #taobus-navigation summary,
+#app #taobus-navigation button {
+  color: #d7deee !important;
+}
+#app #taobus-navigation button[aria-current="page"] {
+  background: #2c3b5e !important;
+  color: #fff !important;
+  box-shadow: inset 3px 0 0 #8eabff;
+  border-radius: 10px;
+}
+#app #taobus-navigation .nav-group[open] > summary { color: #fff !important; }
+#app .leave-day,
+#app .named-days button {
+  overflow: visible !important;
+}
+#app .leave-day small,
+#app .named-days small {
+  display: block;
+  font-size: 11px !important;
+  line-height: 1.15 !important;
+  white-space: normal !important;
+}
