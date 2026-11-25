@@ -8,228 +8,89 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --paper: #f4efe6;
-    --paper-2: #ebe4d6;
-    --ink: #1b1714;
-    --muted: #6d645b;
-    --line: #e2d9cb;
-    --card: #fffcf7;
-    --navy: #1a2744;
-    --navy-2: #243356;
-    --ember: #d4532b;
-    --ember-soft: #f8e4da;
-    --moss: #2f6b4f;
-    --moss-soft: #e5f0e8;
-    --gold: #a15c12;
-    --gold-soft: #f8edd8;
-    --shadow: 0 18px 40px rgba(40, 28, 16, 0.08);
-    --rail: 92px;
-  }
+  :root { --ink:#141414; --muted:#5c5c5c; --line:#141414; --paper:#f3f3f1; --orange:#e23d12; }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; }
-  body {
-    background:
-      radial-gradient(1200px 500px at 100% -10%, #f7e7d4 0%, transparent 55%),
-      var(--paper);
-    color: var(--ink);
-    font: 15px/1.5 "Noto Sans TC", "PingFang TC", sans-serif;
-  }
+  html, body { margin: 0; min-height: 100%; }
+  body { background: var(--paper); color: var(--ink); font: 15px/1.45 "Noto Sans TC", sans-serif; }
   button, input, select, textarea { font: inherit; color: inherit; }
   button { cursor: pointer; }
-  button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+  button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
   .hidden { display: none !important; }
-
-  /* auth */
-  .auth {
-    min-height: 100%;
-    display: grid;
-    grid-template-columns: 1.15fr 0.85fr;
-  }
-  .poster {
-    position: relative;
-    overflow: hidden;
-    color: #f6efe4;
-    background: var(--navy);
-    padding: clamp(28px, 5vw, 72px);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .poster::before {
-    content: "";
-    position: absolute;
-    inset: auto -20% -30% 10%;
-    height: 70%;
-    background:
-      repeating-linear-gradient(90deg, transparent 0 46px, rgba(255,255,255,.06) 46px 47px),
-      radial-gradient(circle at 30% 40%, rgba(212,83,43,.55), transparent 42%);
-    transform: rotate(-8deg);
-  }
-  .mark { display: flex; align-items: center; gap: 12px; letter-spacing: .18em; font-size: 12px; text-transform: uppercase; position: relative; }
-  .seal {
-    width: 42px; height: 42px; border-radius: 14px;
-    background: var(--ember); color: white;
-    display: grid; place-items: center;
-    font-family: "Noto Serif TC", serif; font-weight: 700; font-size: 22px;
-  }
-  .poster h1 {
-    position: relative;
-    margin: 0;
-    font-family: "Noto Serif TC", serif;
-    font-weight: 700;
-    font-size: clamp(48px, 6vw, 84px);
-    line-height: 1.05;
-    letter-spacing: -0.03em;
-  }
-  .poster h1 span { display: block; font-family: "IBM Plex Mono", monospace; font-size: 14px; letter-spacing: .22em; font-weight: 400; opacity: .7; margin-bottom: 16px; }
-  .poster p { position: relative; max-width: 36ch; color: #d9d0c3; }
-  .route-pills { position: relative; display: flex; gap: 8px; flex-wrap: wrap; }
-  .route-pills b { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 6px 12px; font-weight: 500; font-size: 13px; }
-  .gate {
-    display: grid; place-items: center;
-    padding: 32px 8vw;
-  }
-  .card {
-    width: min(420px, 100%);
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 22px;
-    box-shadow: var(--shadow);
-    padding: 28px;
-  }
-  .card h2 { font-family: "Noto Serif TC", serif; font-size: 32px; margin: 8px 0 4px; }
-  .card .sub { color: var(--muted); margin: 0 0 18px; }
-  label { display: grid; gap: 6px; font-size: 13px; font-weight: 700; margin-bottom: 12px; }
-  input, select, textarea {
-    width: 100%; border: 1px solid #d9d0c2; background: #fff; border-radius: 12px; padding: 11px 12px;
-  }
-  textarea { min-height: 88px; resize: vertical; }
-  .roles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-  .roles button, .btn, .ghost {
-    border-radius: 12px; border: 1px solid var(--line); background: white; padding: 10px 14px;
-  }
-  .roles button[aria-pressed="true"] { background: var(--navy); color: #f6efe4; border-color: var(--navy); }
-  .btn {
-    background: var(--ember); color: white; border: 0; font-weight: 700; width: 100%;
-  }
+  .auth { min-height: 100vh; display: grid; place-items: center; padding: 32px 16px; }
+  .poster { display: none; }
+  .card { width: min(440px, 100%); background: white; border: 1px solid var(--ink); padding: 28px 28px 24px; }
+  .card h2 { font-size: 40px; line-height: 1; margin: 12px 0 8px; letter-spacing: -0.04em; }
+  .sub { color: var(--muted); margin: 0 0 16px; }
+  .mark { font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: .14em; }
+  .seal { display: none; }
+  label { display: grid; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: .04em; margin-bottom: 12px; }
+  input, select, textarea { width: 100%; border: 0; border-bottom: 1px solid var(--ink); background: transparent; border-radius: 0; padding: 8px 0; }
+  textarea { min-height: 72px; }
+  .roles { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 8px 0 16px; border: 1px solid var(--ink); }
+  .roles button, .ghost { border: 0; background: transparent; padding: 10px 12px; }
+  .roles button + button { border-left: 1px solid var(--ink); }
+  .roles button[aria-pressed="true"] { background: var(--ink); color: white; }
+  .btn { background: var(--orange); color: white; border: 0; font-weight: 700; padding: 12px 16px; }
   .btn.inline { width: auto; }
-  .ghost { background: transparent; }
-  .err { color: #9c2f1c; min-height: 1.2em; font-size: 13px; }
-
-  /* app shell */
-  .app { min-height: 100%; display: grid; grid-template-columns: var(--rail) 1fr; }
-  .rail {
-    background: var(--navy);
-    color: #efe7da;
-    display: flex; flex-direction: column; align-items: center;
-    padding: 16px 8px 12px; gap: 8px;
-    position: sticky; top: 0; height: 100vh;
-  }
-  .rail nav { display: grid; gap: 4px; width: 100%; }
-  .rail button.navbtn {
-    border: 0; background: transparent; color: #c9c0b3;
-    border-radius: 14px; padding: 8px 4px; display: grid; justify-items: center; gap: 2px;
-    font-size: 11px;
-  }
-  .rail button.navbtn svg { width: 22px; height: 22px; }
-  .rail button.navbtn.active, .rail button.navbtn:hover { background: var(--navy-2); color: white; }
-  .rail .grow { margin-top: auto; display: grid; gap: 8px; justify-items: center; }
-  .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--ember); display: grid; place-items: center; font-weight: 700; }
-  .workspace { min-width: 0; padding: 22px 28px 48px; }
-  .top {
-    display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 18px;
-  }
-  .kicker { font-family: "IBM Plex Mono", monospace; letter-spacing: .16em; font-size: 11px; color: var(--gold); margin: 0 0 4px; }
-  h1.page {
-    font-family: "Noto Serif TC", serif; font-size: clamp(28px, 3vw, 40px); margin: 0; letter-spacing: -0.03em;
-  }
-  .tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  .statrow { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
-  .stat {
-    background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px;
-  }
-  .stat.hero { background: var(--navy); color: #f6efe4; border: 0; }
+  .err { color: var(--orange); min-height: 1.2em; font-size: 13px; }
+  .app { min-height: 100vh; }
+  .sheet-head { position: sticky; top: 0; z-index: 3; background: var(--paper); border-bottom: 1px solid var(--ink); display: flex; align-items: center; gap: 18px; padding: 0 22px; }
+  .brandline { font-weight: 800; letter-spacing: -0.03em; padding: 14px 0; }
+  .brandline span { display: block; font-family: "IBM Plex Mono", monospace; font-weight: 400; font-size: 10px; letter-spacing: .16em; color: var(--muted); }
+  #nav { display: flex; gap: 0; flex: 1; overflow: auto; }
+  .navbtn { border: 0; background: transparent; padding: 16px 12px; color: var(--muted); border-bottom: 2px solid transparent; }
+  .navbtn svg { display: none; }
+  .navbtn.active { color: var(--ink); border-bottom-color: var(--orange); font-weight: 700; }
+  .sheet-tools { display: flex; align-items: center; gap: 8px; }
+  .avatar { font-family: "IBM Plex Mono", monospace; font-size: 12px; border: 1px solid var(--ink); padding: 4px 6px; }
+  .workspace { padding: 28px 28px 64px; }
+  .kicker { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .16em; color: var(--orange); margin: 0 0 6px; }
+  .top { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; margin-bottom: 18px; }
+  h1.page { font-size: clamp(36px, 5vw, 56px); line-height: .95; letter-spacing: -0.045em; margin: 0; font-weight: 800; }
+  .statrow { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--ink); margin-bottom: 18px; }
+  .stat { padding: 14px 16px; background: white; }
+  .stat + .stat { border-left: 1px solid var(--ink); }
+  .stat.hero { background: var(--ink); color: white; }
   .stat b { display: block; font-family: "IBM Plex Mono", monospace; font-size: 28px; font-weight: 500; }
-  .stat span { color: var(--muted); font-size: 13px; }
-  .stat.hero span { color: #c9c0b3; }
-  .board {
-    display: grid; grid-template-columns: 72px 1fr; gap: 0;
-    background: var(--card); border: 1px solid var(--line); border-radius: 20px; overflow: hidden;
-  }
-  .hours { display: grid; }
-  .hours div, .lane-hour { height: 64px; border-top: 1px dashed #eadfce; font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted); padding: 6px; }
-  .hours { padding-top: 53px; }
-  .lanes { display: grid; grid-template-columns: repeat(4, 1fr); }
-  .lane { border-left: 1px solid var(--line); min-height: 0; }
-  .lane header { position: sticky; top: 0; background: #faf6ef; padding: 10px 12px; border-bottom: 1px solid var(--line); font-weight: 700; }
-  .lane header small { display: block; font-weight: 500; color: var(--muted); }
-  .lane-body { position: relative; height: 512px; }
-  .trip {
-    position: absolute; left: 8px; right: 8px;
-    border: 0; text-align: left; border-radius: 12px; padding: 8px 10px;
-    background: var(--ember-soft); color: #6a2b16;
-  }
-  .trip.moss { background: var(--moss-soft); color: #1d4632; }
-  .trip.gold { background: var(--gold-soft); color: #6a3d0c; }
-  .trip strong { display: block; font-size: 13px; }
-  .trip em { font-style: normal; font-family: "IBM Plex Mono", monospace; font-size: 12px; }
-  .split { display: grid; grid-template-columns: 1.3fr .7fr; gap: 14px; }
-  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; }
-  .panel h3 { margin: 0 0 10px; font-size: 16px; }
-  table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; padding: 8px; border-bottom: 1px solid var(--line); }
-  td { padding: 10px 8px; border-bottom: 1px solid #f0e9de; vertical-align: middle; }
-  .fine { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--card); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
-  .fine th { background: #f7f1e6; letter-spacing: .04em; padding: 12px 14px; }
-  .fine td { padding: 14px; }
-  .fine tbody tr:last-child td { border-bottom: 0; }
-  .fine tbody tr:hover td { background: #fff9f2; }
+  .stat span, .stat.hero span { color: inherit; opacity: .7; font-size: 12px; }
+  table, .fine { width: 100%; border-collapse: collapse; background: white; }
+  .fine, .panel table { border: 1px solid var(--ink); }
+  th { text-align: left; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; padding: 10px 12px; border-bottom: 1px solid var(--ink); }
+  td { padding: 12px; border-bottom: 1px solid #ddd; vertical-align: middle; }
+  tr:last-child td { border-bottom: 0; }
+  tbody tr:hover td { background: #fff6f2; }
   .mono { font-family: "IBM Plex Mono", monospace; font-size: 13px; }
-  .route-id { display: inline-grid; place-items: center; min-width: 64px; height: 28px; border-radius: 8px; background: var(--navy); color: #f6efe4; font-family: "IBM Plex Mono", monospace; font-size: 12px; }
-  .cover-grid { display: grid; grid-template-columns: 280px 1fr; gap: 14px; align-items: start; }
-  .cover-card { border: 1px solid var(--line); border-radius: 16px; padding: 14px; margin-bottom: 10px; background: #fff; }
-  .cover-card h3 { margin: 0 0 4px; }
-  .report-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 14px; }
-  .kpi { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0e9de; }
-  @media (max-width: 980px) { .cover-grid, .report-grid { grid-template-columns: 1fr; } }
-  .tag { display: inline-block; border-radius: 999px; padding: 2px 8px; font-size: 12px; background: var(--paper-2); }
-  .tag.ok { background: var(--moss-soft); color: var(--moss); }
-  .tag.wait { background: var(--gold-soft); color: var(--gold); }
-  .tag.no { background: var(--ember-soft); color: #8a341c; }
-  .people { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-  .person { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: grid; grid-template-columns: 48px 1fr; gap: 12px; }
-  .face { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; font-family: "Noto Serif TC", serif; font-size: 22px; color: white; }
-  .drawer {
-    position: fixed; inset: 0 0 0 auto; width: min(420px, 100%);
-    background: #fffdf9; border-left: 1px solid var(--line); box-shadow: var(--shadow);
-    padding: 24px; transform: translateX(110%); transition: transform .25s ease; z-index: 5;
-  }
-  .drawer.open { transform: none; }
-  .backdrop { position: fixed; inset: 0; background: rgba(26, 23, 20, .28); z-index: 4; }
-  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
-  .day {
-    background: var(--card); border: 1px solid var(--line); border-radius: 14px; min-height: 92px; padding: 8px; text-align: left;
-  }
+  .route-id { font-family: "IBM Plex Mono", monospace; font-weight: 500; }
+  .tag { font-size: 12px; font-weight: 700; }
+  .tag.ok { color: #0d6b3d; }
+  .tag.wait { color: var(--orange); }
+  .tag.no { color: #8a1c12; }
+  .panel { background: white; border: 1px solid var(--ink); padding: 16px; }
+  .panel h3 { margin: 0 0 12px; font-size: 16px; }
+  .cover-grid, .report-grid { display: grid; grid-template-columns: 300px 1fr; gap: 16px; align-items: start; }
+  .report-grid { grid-template-columns: .8fr 1.2fr; }
+  .cover-card { border-top: 1px solid var(--ink); padding: 12px 0; }
+  .cover-card h3 { margin: 0; }
+  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; border: 1px solid var(--ink); background: white; }
+  .cal .kicker { padding: 8px; margin: 0; border-bottom: 1px solid var(--ink); color: var(--ink); }
+  .day { min-height: 84px; border: 0; border-right: 1px solid #e5e5e5; border-bottom: 1px solid #e5e5e5; background: white; text-align: left; padding: 8px; }
   .day b { font-family: "IBM Plex Mono", monospace; }
-  .day.off { opacity: .45; }
-  .day.today { outline: 2px solid var(--ember); }
-  .bars { display: grid; gap: 10px; }
-  .bar { display: grid; grid-template-columns: 88px 1fr 48px; gap: 8px; align-items: center; font-size: 13px; }
-  .bar i { display: block; height: 8px; border-radius: 99px; background: #efe6d8; overflow: hidden; }
-  .bar i span { display: block; height: 100%; background: var(--navy); }
-  .toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--navy); color: white; padding: 10px 16px; border-radius: 999px; z-index: 6; }
-  @media (max-width: 980px) {
-    .auth, .statrow, .split, .lanes { grid-template-columns: 1fr; }
-    .app { grid-template-columns: 1fr; }
-    .rail { position: sticky; top: 0; height: auto; flex-direction: row; width: 100%; z-index: 3; overflow: auto; }
-    .rail nav { display: flex; }
-    .rail .grow { margin: 0 0 0 auto; display: flex; }
-    .board { grid-template-columns: 1fr; }
-    .hours { display: none; }
-    .lane-body { height: auto; }
-    .lane { min-height: 0; }
-    .trip { position: static; margin: 8px; }
+  .day.off { color: #bbb; }
+  .day.today { background: #fff1ea; box-shadow: inset 3px 0 0 var(--orange); }
+  .bars { display: grid; gap: 12px; }
+  .bar { display: grid; grid-template-columns: 72px 1fr 48px; gap: 8px; align-items: center; font-size: 13px; }
+  .bar i { display: block; height: 6px; background: #ececec; }
+  .bar i span { display: block; height: 100%; background: var(--ink); }
+  .drawer { position: fixed; top: 0; right: 0; height: 100%; width: min(380px, 100%); background: white; border-left: 1px solid var(--ink); padding: 24px; transform: translateX(110%); transition: transform .2s ease; z-index: 5; }
+  .drawer.open { transform: none; }
+  .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 4; }
+  .toast { position: fixed; bottom: 16px; left: 22px; background: var(--ink); color: white; padding: 10px 14px; z-index: 6; }
+  .tools { display: flex; gap: 8px; align-items: center; }
+  @media (max-width: 900px) {
+    .sheet-head { flex-wrap: wrap; }
+    .statrow, .cover-grid, .report-grid { grid-template-columns: 1fr; }
+    .stat + .stat { border-left: 0; border-top: 1px solid var(--ink); }
+    .workspace { padding: 18px 14px 48px; }
   }
 </style>
 </head>
@@ -261,15 +122,15 @@
 </div>
 
 <div id="app" class="app hidden">
-  <aside class="rail">
-    <div class="seal" title="桃小巴">桃</div>
+  <header class="sheet-head">
+    <div class="brandline">桃小巴<span>DUTY SHEET</span></div>
     <nav id="nav"></nav>
-    <div class="grow">
-      <button class="ghost" id="lang" style="color:#efe7da;border-color:#3a4d73">EN</button>
+    <div class="sheet-tools">
+      <button class="ghost" id="lang">EN</button>
       <div class="avatar" id="who">調</div>
-      <button class="ghost" id="logout" style="color:#efe7da;border-color:#3a4d73;font-size:12px">登出</button>
+      <button class="ghost" id="logout">登出</button>
     </div>
-  </aside>
+  </header>
   <main class="workspace" id="view"></main>
 </div>
 <div id="backdrop" class="backdrop hidden"></div>
@@ -357,24 +218,27 @@ function tripStyle(tr) {
   const h = Math.max(46, tr.len * 64 - 8);
   return `top:${top}px;height:${h}px`;
 }
+function clock(start){const m=Math.round((start-Math.floor(start)+1e-6)*60)%60;return String(Math.floor(start)).padStart(2,"0")+":"+String(m).padStart(2,"0")}
 function board() {
   const open = TRIPS.filter(x => x.name === "待指派").length;
-  const lanes = t().lanes.map((name, i) => {
-    const body = TRIPS.filter(tr => tr.lane === i).map(tr =>
-      `<button class="trip ${tr.tone}" data-trip="${tr.id}" style="${tripStyle(tr)}"><strong>${tr.name}</strong><em>${tr.id.slice(-4)} · ${tr.from}</em></button>`
-    ).join("");
-    return `<section class="lane"><header>${name}<small>${TRIPS.filter(tr=>tr.lane===i).length} ${lang==="zh"?"班":"runs"}</small></header><div class="lane-body">${body}</div></section>`;
-  }).join("");
+  const rows = [...TRIPS].sort((a,b)=>a.start-b.start).map(tr => `<tr>
+    <td class="mono">${clock(tr.start)}</td>
+    <td class="route-id">${t().lanes[tr.lane]}</td>
+    <td>${tr.from} → ${tr.to}</td>
+    <td>${tr.name}</td>
+    <td class="mono">${tr.pax}</td>
+    <td><button class="ghost" data-trip="${tr.id}">${lang==="zh"?"改派":"Reassign"}</button></td>
+  </tr>`).join("");
   return `
     <p class="kicker">${t().boardK}</p><div class="top"><h1 class="page">${t().boardT}</h1>
       <div class="tools"><input id="day" type="date" value="2026-11-24" style="width:auto"><button class="btn inline" id="publish">${lang==="zh"?"發布今日班表":"Publish today"}</button></div></div>
     <section class="statrow">
-      <article class="stat hero"><span>${t().live}</span><b>8</b></article>
-      <article class="stat"><span>${t().assigned}</span><b>6</b></article>
-      <article class="stat"><span>${t().open}</span><b>${open}</b></article>
-      <article class="stat"><span>${t().cover}</span><b>1</b></article>
+      <article class="stat hero"><span>${t().live}</span><b>08</b></article>
+      <article class="stat"><span>${t().assigned}</span><b>06</b></article>
+      <article class="stat"><span>${t().open}</span><b>0${open}</b></article>
+      <article class="stat"><span>${t().cover}</span><b>01</b></article>
     </section>
-    <div class="board"><div class="hours">${hours()}</div><div class="lanes">${lanes}</div></div>`;
+    <table class="fine"><thead><tr><th>${lang==="zh"?"時間":"Time"}</th><th>${lang==="zh"?"路線":"Route"}</th><th>${lang==="zh"?"起迄":"Ends"}</th><th>${lang==="zh"?"駕駛":"Driver"}</th><th>${lang==="zh"?"載客":"Riders"}</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 function calendar() {
   const cells = [];
@@ -480,14 +344,14 @@ function reports() {
 }
 function ops() {
   return `<p class="kicker">TRIP LOG</p><div class="top"><h1 class="page">${lang==="zh"?"行車紀錄":"Operations"}</h1></div>
-    <div class="panel"><table><thead><tr><th>${lang==="zh"?"時間":"Time"}</th><th>${lang==="zh"?"路線":"Route"}</th><th>${lang==="zh"?"駕駛":"Driver"}</th><th>${lang==="zh"?"載客":"Riders"}</th><th>${lang==="zh"?"狀態":"State"}</th></tr></thead>
-    <tbody>${TRIPS.map(tr=>`<tr><td>${String(Math.floor(tr.start)).padStart(2,"0")}:${String(Math.round((tr.start%1)*60)).padStart(2,"0")}</td><td>${t().lanes[tr.lane]}</td><td>${tr.name}</td><td>${tr.pax}</td><td><span class="tag ${tr.name==="待指派"?"wait":"ok"}">${tr.name==="待指派"?(lang==="zh"?"未派出":"Open"):(lang==="zh"?"已完成登記":"Logged")}</span></td></tr>`).join("")}</tbody></table></div>`;
+    <table class="fine"><thead><tr><th>${lang==="zh"?"時間":"Time"}</th><th>${lang==="zh"?"路線":"Route"}</th><th>${lang==="zh"?"駕駛":"Driver"}</th><th>${lang==="zh"?"載客":"Riders"}</th><th>${lang==="zh"?"狀態":"State"}</th></tr></thead>
+    <tbody>${TRIPS.map(tr=>`<tr><td>${String(Math.floor(tr.start)).padStart(2,"0")}:${String(Math.round((tr.start%1)*60)).padStart(2,"0")}</td><td>${t().lanes[tr.lane]}</td><td>${tr.name}</td><td>${tr.pax}</td><td><span class="tag ${tr.name==="待指派"?"wait":"ok"}">${tr.name==="待指派"?(lang==="zh"?"未派出":"Open"):(lang==="zh"?"已完成登記":"Logged")}</span></td></tr>`).join("")}</tbody></table>`;
 }
 function access() {
   const rows = [["dispatcher","調度員","班表、休假、報表"],["lin.driver","駕駛","自己的休假與車資"],["auditor","檢視","報表唯讀"]];
   return `<p class="kicker">ACCESS</p><div class="top"><h1 class="page">${lang==="zh"?"帳號與權限":"Access"}</h1></div>
-    <div class="panel"><table><thead><tr><th>${lang==="zh"?"帳號":"Account"}</th><th>${lang==="zh"?"角色":"Role"}</th><th>${lang==="zh"?"範圍":"Scope"}</th></tr></thead>
-    <tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+    <table class="fine"><thead><tr><th>${lang==="zh"?"帳號":"Account"}</th><th>${lang==="zh"?"角色":"Role"}</th><th>${lang==="zh"?"範圍":"Scope"}</th></tr></thead>
+    <tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
 }
 const FARE_RUNS = [
   { key:"L115-1-0705", route:"L115 大樹林", lane:"1", time:"07:05", fare:860 },
