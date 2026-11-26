@@ -1,8 +1,10 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("fs");
+const net = require("net");
 const path = require("path");
 const { handle, createMemory } = require("../preview-api");
+const { server } = require("../server");
 
 function login(data, name) {
   const session = { user: null };
@@ -83,6 +85,22 @@ test("client keeps the leave deep link and drops the duplicate month heading", (
   assert.equal(html.includes("shineway"), false);
   assert.match(html, /period==='month'\?'':dateLabel/);
   assert.match(html, /aria-label="'\+t\('歷史月份','History month'\)/);
+});
+
+test("a malformed path returns 400 instead of crashing", async () => {
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const { port } = server.address();
+  const status = await new Promise((resolve, reject) => {
+    const socket = net.connect(port, "127.0.0.1", () => {
+      socket.write("GET /% HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n");
+    });
+    let raw = "";
+    socket.on("data", (chunk) => { raw += chunk; });
+    socket.on("end", () => resolve(Number(raw.split(" ")[1])));
+    socket.on("error", reject);
+  });
+  await new Promise((resolve) => server.close(resolve));
+  assert.equal(status, 400);
 });
 
 test("unknown account is rejected and does not open the desk", () => {

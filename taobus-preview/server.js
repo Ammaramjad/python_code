@@ -12,8 +12,22 @@ const types = {
 };
 
 const server = http.createServer((req, res) => {
-  const url = new URL(req.url, "http://127.0.0.1");
-  let pathname = decodeURIComponent(url.pathname);
+  let url;
+  try {
+    url = new URL(req.url, "http://127.0.0.1");
+  } catch {
+    res.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end("Bad request");
+    return;
+  }
+  let pathname;
+  try {
+    pathname = decodeURIComponent(url.pathname);
+  } catch {
+    res.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end("Bad request");
+    return;
+  }
   if (pathname === "/" || pathname === "/driver" || pathname === "/driver/") pathname = "/index.html";
   const relative = pathname.replace(/^\/+/, "");
   const file = path.resolve(root, relative);
@@ -33,7 +47,12 @@ const server = http.createServer((req, res) => {
   });
 });
 
-const port = Number(process.env.PORT || 4173);
-server.listen(port, "127.0.0.1", () => {
-  console.log("TaoBus preview http://127.0.0.1:" + port);
-});
+function start(port = Number(process.env.PORT || 4173)) {
+  return server.listen(port, "127.0.0.1", () => {
+    console.log("TaoBus preview http://127.0.0.1:" + port);
+  });
+}
+
+if (require.main === module) start();
+
+module.exports = { server };
