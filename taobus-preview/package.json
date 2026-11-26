@@ -3,7 +3,7 @@
   "private": true,
   "description": "Isolated bilingual TaoBus operations preview. Fictional data only.",
   "scripts": {
-    "start": "node local-preview-server.js",
+    "build": "node -e \"require('fs').accessSync('public/index.html')\"",
     "test": "node --test test/preview.test.js"
   }
 }

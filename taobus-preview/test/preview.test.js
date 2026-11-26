@@ -4,7 +4,7 @@ const fs = require("fs");
 const net = require("net");
 const path = require("path");
 const { handle, createMemory } = require("../public/preview-api");
-const { server } = require("../local-preview-server");
+const { server } = require("../scripts/preview-server");
 
 function login(data, name) {
   const session = { user: null };
