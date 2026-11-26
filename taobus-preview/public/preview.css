@@ -1,236 +1,437 @@
-/* TaoBus operations desk. Original layout on top of the existing modules. */
+/* Light operations workspace. One contract for shell, actions, tables, and forms. */
 :root {
-  --ink: #1c2433;
-  --muted: #5c677a;
-  --line: #e3e7ef;
-  --paper: #eef1f6;
+  --ink: #1c1917;
+  --muted: #6b625a;
+  --line: #e6dfd6;
+  --line-strong: #d4cbc0;
+  --paper: #f6f3ef;
   --card: #ffffff;
-  --sidebar: #161d2e;
-  --sidebar-2: #243049;
-  --accent: #2f5bea;
-  --accent-soft: #e7edfd;
-  --ok: #0e7a45;
-  --ok-soft: #e5f6ee;
-  --wait: #8a5a00;
-  --wait-soft: #fff4d8;
-  --bad: #9d2c2c;
-  --bad-soft: #fde8e6;
-  --shadow: 0 10px 30px rgba(22, 29, 46, 0.06);
-  --nav: 248px;
-  --radius: 14px;
+  --teal: #0f6e6b;
+  --teal-press: #0b5755;
+  --teal-soft: #e7f3f2;
+  --amber: #8a5a12;
+  --amber-soft: #fff4df;
+  --red: #9f2d2d;
+  --red-soft: #fdeceb;
+  --ok: #1f6b45;
+  --ok-soft: #e7f6ee;
+  --radius: 8px;
+  --shadow: 0 10px 28px rgba(48, 36, 24, 0.08);
+  --pad: 24px;
+  --btn-h: 40px;
+  --font: "Noto Sans TC", "PingFang TC", "Segoe UI", sans-serif;
 }
-html[data-design] body,
 html body {
   background: var(--paper) !important;
   color: var(--ink) !important;
-  font-family: "Noto Sans TC", "PingFang TC", "Segoe UI", sans-serif !important;
+  font-family: var(--font) !important;
 }
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-  outline: 3px solid var(--accent) !important;
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--teal) !important;
   outline-offset: 2px;
 }
-.shell {
-  grid-template-columns: var(--nav) minmax(0, 1fr) !important;
-  background: var(--paper);
-}
-.shell > aside {
-  background: var(--sidebar) !important;
-  color: #e7ebf5 !important;
-  padding: 20px 14px !important;
-  gap: 18px !important;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow: auto;
-}
-.brand { font-size: 22px !important; letter-spacing: 0 !important; }
-.brand small { letter-spacing: 0.14em !important; color: #b7c3de !important; }
-.logo { background: #dbe4ff !important; color: #1a2a66 !important; border-radius: 12px !important; }
-.nav { gap: 4px !important; }
-.nav button,
-.nav a {
-  color: #d5dced !important;
-  border-radius: 10px !important;
-  min-height: 44px;
-  display: flex !important;
-  align-items: center;
-  gap: 8px;
-}
-.nav button.active,
-.nav button[aria-current="true"] {
-  background: var(--sidebar-2) !important;
-  color: white !important;
-  box-shadow: inset 3px 0 0 #8eabff;
-}
-.nav-caption { font-size: 14px; line-height: 1.25; text-wrap: pretty; }
-.profile { border-top: 1px solid #31415f !important; color: #d5dced !important; }
-.tao-toolbar {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  padding: 12px 4% 0;
-}
-.dispatch-header { padding: 8px 4% 0 !important; }
-.dispatch-header h1,
-.content > .title {
-  font-size: clamp(26px, 3vw, 36px) !important;
-  letter-spacing: -0.03em !important;
-  color: var(--ink) !important;
-  background: transparent !important;
-  padding: 0 !important;
-  margin: 0 0 8px !important;
-}
-.content > .title:after { display: none !important; }
-.content { padding-top: 12px !important; }
-.module-surface > section,
-.panel,
-.mo-panel,
-.metric,
-.fx-card {
-  border-radius: var(--radius) !important;
-  box-shadow: var(--shadow);
-}
-h3.duplicate-title { display: none !important; }
-.preview-note {
-  background: var(--accent-soft);
-  border: 1px solid #c9d6fb;
-  border-radius: 12px;
-  padding: 10px 12px;
-  color: #1d326f;
-  font-size: 14px;
-}
-.module-controls,
-.tt-history-toolbar,
-.mo-tools,
-.sc-tools {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-.module-controls input,
-.module-controls select,
-.tt-date-nav input,
-.date-parts select,
-.panel input,
-.panel select,
-.panel textarea {
-  min-height: 40px;
-}
-.date-parts select { min-width: 4.5rem !important; }
-.lv-stats,
-.cards,
-.mo-metrics {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 10px;
-}
-.lv-stats button,
-.metric {
-  text-align: left;
-  min-height: 72px;
-}
-.lv-stats button[aria-pressed="true"] {
-  outline: 2px solid var(--accent);
-  background: var(--accent-soft) !important;
-}
-.leave-days.named-days,
-.reference-month {
-  display: grid !important;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 6px !important;
-}
-.leave-day,
-.reference-month > button,
-.tt-day-card {
-  min-height: 64px;
-  min-width: 0;
-}
-.leave-day small,
-.reference-month small,
-.nav-caption { overflow-wrap: anywhere; }
-.mo-scroll,
-.schedule-list,
-.module-surface table { max-width: 100%; }
-.module-surface { overflow-x: auto; }
-table { border-collapse: collapse; }
-th, td { padding: 10px 12px; }
-tbody tr:nth-child(even) { background: #f7f8fb; }
-.tag.ok, [data-status="approved"] { background: var(--ok-soft); color: var(--ok); }
-.tag.wait, [data-status="pending"] { background: var(--wait-soft); color: var(--wait); }
-.tag.no, [data-status="declined"] { background: var(--bad-soft); color: var(--bad); }
-.action, .mo-btn {
-  min-height: 40px;
-  border-radius: 10px !important;
-}
-dialog, .mo-dialog {
-  border: 0 !important;
-  border-radius: 16px !important;
-  box-shadow: var(--shadow);
-  max-width: min(720px, 96vw);
-}
-.auth, .signin { background: var(--paper) !important; }
-.poster, .ref-poster { background: var(--sidebar) !important; }
-[data-preview-map] {
-  min-height: 220px;
-  border-radius: 12px;
-  background:
-    linear-gradient(#d9e2f2, #d9e2f2) 0 40% / 100% 1px no-repeat,
-    repeating-linear-gradient(90deg, #e7eef8 0 28px, #f7f9fc 28px 56px);
-}
-@media (max-width: 900px) {
-  .shell { grid-template-columns: 1fr !important; }
-  .shell > aside {
-    position: sticky;
-    top: 0;
-    height: auto;
-    z-index: 5;
-    flex-direction: row !important;
-    align-items: center;
-  }
-  .nav { display: flex !important; overflow: auto; }
-  .nav button { white-space: nowrap; }
-  .profile { margin: 0 0 0 auto !important; border: 0 !important; padding: 0 !important; }
-  .brand small { display: none; }
-}
-@media (max-width: 420px) {
-  .content, .dispatch-header, .tao-toolbar { padding-left: 12px !important; padding-right: 12px !important; }
-  .leave-day, .reference-month > button { min-height: 52px; padding: 4px !important; font-size: 12px; }
-  .dispatch-header h1 { font-size: 26px !important; }
-}
-@media (pointer: coarse) {
-  .nav button, .action, .mo-btn, .date-parts select { min-height: 44px; }
-}
 
-#app #taobus-navigation {
-  background: #161d2e !important;
-  color: #e7ebf5 !important;
+/* Shell: compact header, content, footer */
+html body .shell {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  background: var(--paper) !important;
+  grid-template-columns: none !important;
 }
-#app #taobus-navigation .brand,
-#app #taobus-navigation .group-label,
-#app #taobus-navigation summary,
-#app #taobus-navigation button {
-  color: #d7deee !important;
-}
-#app #taobus-navigation button[aria-current="page"] {
-  background: #2c3b5e !important;
-  color: #fff !important;
-  box-shadow: inset 3px 0 0 #8eabff;
-  border-radius: 10px;
-}
-#app #taobus-navigation .nav-group[open] > summary { color: #fff !important; }
-#app .leave-day,
-#app .named-days button {
+html body #taobus-navigation {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 30 !important;
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 0 var(--pad) !important;
+  background: var(--card) !important;
+  color: var(--ink) !important;
+  border-bottom: 1px solid var(--line) !important;
+  border-right: 0 !important;
   overflow: visible !important;
 }
-#app .leave-day small,
-#app .named-days small {
-  display: block;
-  font-size: 11px !important;
-  line-height: 1.15 !important;
-  white-space: normal !important;
+html body #taobus-navigation .brand {
+  color: var(--ink) !important;
+  font-size: 18px !important;
+  flex: 0 0 auto;
+}
+html body #taobus-navigation .brand small { color: var(--muted) !important; letter-spacing: 0.08em !important; }
+html body #taobus-navigation .logo {
+  background: var(--teal) !important;
+  color: white !important;
+  border-radius: 8px !important;
+  width: 36px !important;
+  height: 36px !important;
+}
+html body #taobus-navigation .nav {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 2px !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  overflow: auto !important;
+  padding: 8px 0 !important;
+}
+html body #taobus-navigation .nav-group { position: relative !important; flex: 0 0 auto !important; }
+html body #taobus-navigation summary {
+  list-style: none !important;
+  cursor: pointer !important;
+  min-height: 36px !important;
+  padding: 6px 10px !important;
+  border-radius: 8px !important;
+  color: var(--ink) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  white-space: nowrap !important;
+}
+html body #taobus-navigation summary::-webkit-details-marker { display: none; }
+html body #taobus-navigation .nav-group[open] > summary,
+html body #taobus-navigation button[aria-current="page"] {
+  background: var(--teal-soft) !important;
+  color: var(--teal) !important;
+  box-shadow: none !important;
+}
+html body #taobus-navigation .group-links {
+  display: none !important;
+  position: absolute !important;
+  top: calc(100% + 4px) !important;
+  left: 0 !important;
+  min-width: 220px !important;
+  padding: 6px !important;
+  background: var(--card) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--shadow) !important;
+  z-index: 40 !important;
+}
+html body #taobus-navigation .nav-group[open] > .group-links { display: grid !important; gap: 2px !important; }
+html body #taobus-navigation .group-links button,
+html body #taobus-navigation .nav > button {
+  color: var(--ink) !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  min-height: 40px !important;
+  text-align: left !important;
+  padding: 8px 10px !important;
+  white-space: nowrap !important;
+}
+html body #taobus-navigation .group-links button[aria-current="page"] {
+  background: var(--teal) !important;
+  color: white !important;
+}
+html body #taobus-navigation .profile {
+  margin: 0 0 0 auto !important;
+  border: 0 !important;
+  padding: 0 !important;
+  color: var(--ink) !important;
+  white-space: nowrap !important;
+}
+html body .workspace {
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  background: transparent !important;
+}
+html body .tao-toolbar,
+html body .dispatch-header,
+html body .content {
+  width: min(1280px, calc(100% - (var(--pad) * 2))) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  box-sizing: border-box !important;
+}
+html body .tao-toolbar { display: flex !important; justify-content: flex-end !important; padding-top: 12px !important; }
+html body .dispatch-header h1,
+html body .content > .title {
+  color: var(--ink) !important;
+  background: none !important;
+  font-size: 28px !important;
+  letter-spacing: -0.03em !important;
+  margin: 4px 0 12px !important;
+  padding: 0 !important;
+}
+html body .content > .title:after { display: none !important; }
+html body .content { padding-top: 0 !important; padding-bottom: 28px !important; }
+html body .tb-footer {
+  margin-top: auto;
+  width: min(1280px, calc(100% - (var(--pad) * 2)));
+  margin-left: auto;
+  margin-right: auto;
+  padding: 16px 0 24px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Buttons */
+html body button.action,
+html body .mo-btn:not(.mo-light),
+html body .sc-add,
+html body .tb-primary {
+  box-sizing: border-box !important;
+  height: var(--btn-h) !important;
+  min-height: var(--btn-h) !important;
+  padding: 0 14px !important;
+  border: 0 !important;
+  border-radius: var(--radius) !important;
+  background: var(--teal) !important;
+  color: white !important;
+  font: 600 14px/1 var(--font) !important;
+  box-shadow: none !important;
+}
+html body button.action:hover,
+html body .mo-btn:not(.mo-light):hover,
+html body .tb-primary:hover { background: var(--teal-press) !important; }
+html body .mo-btn.mo-light,
+html body .pill,
+html body .tb-secondary {
+  box-sizing: border-box !important;
+  height: var(--btn-h) !important;
+  min-height: var(--btn-h) !important;
+  padding: 0 14px !important;
+  border: 1px solid var(--line-strong) !important;
+  border-radius: var(--radius) !important;
+  background: var(--card) !important;
+  color: var(--ink) !important;
+  font: 600 14px/1 var(--font) !important;
+}
+html body button[data-decision="declined"],
+html body .tb-danger {
+  background: var(--card) !important;
+  color: var(--red) !important;
+  border: 1px solid #e7c4c4 !important;
+}
+html body .mo-table button,
+html body table button:not(.action) {
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 10px !important;
+  font-size: 13px !important;
+}
+html body button:disabled { opacity: 0.45 !important; }
+
+/* Surfaces, tables, forms */
+html body .module-surface > section,
+html body .panel,
+html body .mo-panel,
+html body .metric,
+html body .fx-card {
+  background: var(--card) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+html body .module-surface table,
+html body .mo-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  font-size: 14px !important;
+}
+html body .module-surface th,
+html body .mo-table th {
+  text-align: left !important;
+  color: var(--muted) !important;
+  font-size: 12px !important;
+  font-weight: 650 !important;
+  background: #faf7f4 !important;
+  padding: 10px 12px !important;
+  border-bottom: 1px solid var(--line) !important;
+}
+html body .module-surface td,
+html body .mo-table td {
+  padding: 10px 12px !important;
+  border-top: 1px solid var(--line) !important;
+  vertical-align: middle !important;
+}
+html body input:not([type=checkbox]):not([type=radio]),
+html body select,
+html body textarea {
+  min-height: 40px !important;
+  border: 1px solid var(--line-strong) !important;
+  border-radius: var(--radius) !important;
+  background: white !important;
+  color: var(--ink) !important;
+}
+html body h3.duplicate-title { display: none !important; }
+html body .lv-stats {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+html body .lv-stats button {
+  min-height: 40px !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--line) !important;
+  background: white !important;
+  padding: 6px 12px !important;
+}
+html body .lv-stats button[aria-pressed="true"] {
+  background: var(--teal) !important;
+  color: white !important;
+  outline: none !important;
+}
+html body .reference-month,
+html body .leave-days.named-days {
+  display: grid !important;
+  grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+}
+html body .reference-month > button,
+html body .leave-day {
+  min-height: 72px !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 10px !important;
+  background: white !important;
+}
+html body .tb-leave-board {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.8fr);
+  gap: 16px;
+  align-items: start;
+}
+html body .tb-request-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+html body .tb-request-list button {
+  width: 100%;
+  text-align: left;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  min-height: 44px;
+}
+html body .tb-request-list button[aria-pressed="true"] { border-color: var(--teal); background: var(--teal-soft); }
+html body .tb-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+html body .tb-status.pending { background: var(--amber-soft); color: var(--amber); }
+html body .tb-status.approved { background: var(--ok-soft); color: var(--ok); }
+html body .tb-status.declined { background: var(--red-soft); color: var(--red); }
+html body .tb-sheet {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  padding: 16px;
+}
+html body .preview-note {
+  background: var(--teal-soft);
+  border: 1px solid #c5e0de;
+  color: #134e4b;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+html body .auth, html body .poster, html body .ref-poster {
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+}
+html body .poster h1, html body .ref-poster h1 { color: var(--ink) !important; }
+
+@media (max-width: 800px) {
+  :root { --pad: 12px; --btn-h: 44px; }
+  html body #taobus-navigation { flex-wrap: wrap !important; padding-top: 8px !important; padding-bottom: 8px !important; }
+  html body #taobus-navigation .nav { order: 3; width: 100% !important; }
+  html body .tb-leave-board { grid-template-columns: 1fr; }
+  html body .tb-footer { padding-bottom: 28px; }
+  html body .dispatch-header h1 { font-size: 24px !important; }
+}
+@media (pointer: coarse) {
+  html body button.action, html body .mo-btn, html body .nav button { min-height: 44px !important; }
+}
+
+/* Beat the earlier fuse rules that use #app and !important. */
+html body #app #taobus-navigation {
+  background: #ffffff !important;
+  color: #1c1917 !important;
+}
+html body #app #taobus-navigation .brand,
+html body #app #taobus-navigation summary,
+html body #app #taobus-navigation .profile,
+html body #app #taobus-navigation .group-links button {
+  color: #1c1917 !important;
+}
+html body #app #taobus-navigation .group-links button[aria-current="page"] {
+  background: #0f6e6b !important;
+  color: #ffffff !important;
+}
+html body #app button.action,
+html body #app .mo-btn:not(.mo-light),
+html body #app .tb-primary {
+  background: #0f6e6b !important;
+  color: #ffffff !important;
+  border-color: #0f6e6b !important;
+  height: 40px !important;
+  border-radius: 8px !important;
+}
+html body #app .mo-btn.mo-light {
+  background: #ffffff !important;
+  color: #1c1917 !important;
+  border: 1px solid #d4cbc0 !important;
+}
+html:not(#theme-override) #app #taobus-navigation {
+  flex-wrap: wrap !important;
+  height: auto !important;
+  align-items: center !important;
+}
+html:not(#theme-override) #app #taobus-navigation .nav {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  overflow: visible !important;
+  width: 100% !important;
+}
+html:not(#theme-override) #app #taobus-navigation .nav-group,
+html:not(#theme-override) #app #taobus-navigation summary {
+  width: auto !important;
+  flex: 0 0 auto !important;
+}
+html body .tb-footer { position: relative; z-index: 1; background: #f6f3ef; }
+html:not(#theme-override) #app #taobus-navigation .logo {
+  background: #0f6e6b !important;
+  color: #ffffff !important;
+}
+html:not(#theme-override) #app .mo-panel > header,
+html:not(#theme-override) #app .module-surface > section > header {
+  background: #ffffff !important;
+  color: #1c1917 !important;
+}
+html:not(#theme-override) #app #taobus-navigation .group-links {
+  display: none !important;
+  position: absolute !important;
+  top: calc(100% + 4px) !important;
+  background: #ffffff !important;
+  z-index: 50 !important;
+}
+html:not(#theme-override) #app #taobus-navigation .nav-group[open] > .group-links {
+  display: grid !important;
+}
+html:not(#theme-override) #app .tb-request-list button[aria-pressed="true"] {
+  background: #0f6e6b !important;
+  color: #ffffff !important;
+}
+html:not(#theme-override) #app .shell main button.tb-primary,
+html:not(#theme-override) #app .shell main button.action,
+html:not(#theme-override) #app .shell main .mo-btn:not(.mo-light) {
+  background: #0f6e6b !important;
+  color: #ffffff !important;
+  border-color: #0f6e6b !important;
 }
