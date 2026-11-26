@@ -3,8 +3,8 @@ const assert = require("node:assert/strict");
 const fs = require("fs");
 const net = require("net");
 const path = require("path");
-const { handle, createMemory } = require("../preview-api");
-const { server } = require("../server");
+const { handle, createMemory } = require("../public/preview-api");
+const { server } = require("../local-preview-server");
 
 function login(data, name) {
   const session = { user: null };
@@ -77,7 +77,7 @@ test("odd runs are marked in the fictional period rules", () => {
 });
 
 test("client keeps the leave deep link and drops the duplicate month heading", () => {
-  const html = fs.readFileSync(path.join(__dirname, "../index.html"), "utf8");
+  const html = fs.readFileSync(path.join(__dirname, "../public/index.html"), "utf8");
   assert.match(html, /get\('view'\)/);
   assert.match(html, /get\('metric'\)/);
   assert.equal(html.includes("dateLabel(d,'month')"), false);
